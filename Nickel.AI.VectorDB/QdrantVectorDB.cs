@@ -41,6 +41,11 @@ namespace Nickel.AI.VectorDB
             return payload.ToDictionary(kvp => kvp.Key, kvp => new Value(kvp.Value));
         }
 
+        private Dictionary<string, string> MapFromPayload(IDictionary<string, Value> payload)
+        {
+            return payload.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+        }
+
         private List<PointStruct> MapToPointStructs(List<VectorPoint> points)
         {
             // NOTE: PointStruct.Payload is readonly collection property ... Can't just map with LINQ :(
@@ -87,9 +92,27 @@ namespace Nickel.AI.VectorDB
             await client.UpsertAsync(collectionName, MapToPointStructs(points));
         }
 
-        public List<VectorPoint> Search(string collectionName, float[] queryVector, int limit)
+        public async Task<List<VectorPoint>> Search(string collectionName, float[] queryVector, int limit)
         {
-            throw new NotImplementedException();
+            var client = GetClient();
+            var points = await client.SearchAsync(
+                collectionName,
+                queryVector,
+                limit: (ulong)limit);
+
+            var results = new List<VectorPoint>();
+
+            foreach (var point in points)
+            {
+                results.Add(new VectorPoint()
+                {
+                    Id = point.Id.ToString(),
+                    Payload = MapFromPayload(point.Payload),
+                    Vectors = point.Vectors.Vector.Data.ToArray()
+                });
+            }
+
+            return results;
         }
     }
 }

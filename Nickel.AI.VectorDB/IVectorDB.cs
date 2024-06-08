@@ -6,6 +6,6 @@
     {
         void CreateCollection(string name, ulong size, DistanceType distanceType);
         void Upsert(string collectionName, List<VectorPoint> points);
-        List<VectorPoint> Search(string collectionName, float[] queryVector, int limit);
+        Task<List<VectorPoint>> Search(string collectionName, float[] queryVector, int limit);
     }
 }

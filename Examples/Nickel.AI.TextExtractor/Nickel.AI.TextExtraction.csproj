@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Nickel.AI.Extraction\Nickel.AI.Extraction.csproj" />
+    <ProjectReference Include="..\..\Nickel.AI\Nickel.AI.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.Embedder", "Examp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.TextExtraction", "Examples\Nickel.AI.TextExtractor\Nickel.AI.TextExtraction.csproj", "{77ECB048-FD25-44F9-A951-CCF0E090AFF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI", "Nickel.AI\Nickel.AI.csproj", "{3BCAB649-E640-4208-9956-C0A4019A3D13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI", "Nickel.AI\Nickel.AI.csproj", "{3BCAB649-E640-4208-9956-C0A4019A3D13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.TextTokenizer", "Examples\Nickel.AI.TextTokenizer\Nickel.AI.TextTokenizer.csproj", "{47207593-4B9E-4315-8368-8734E10C6202}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{3BCAB649-E640-4208-9956-C0A4019A3D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BCAB649-E640-4208-9956-C0A4019A3D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BCAB649-E640-4208-9956-C0A4019A3D13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47207593-4B9E-4315-8368-8734E10C6202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47207593-4B9E-4315-8368-8734E10C6202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47207593-4B9E-4315-8368-8734E10C6202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47207593-4B9E-4315-8368-8734E10C6202}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

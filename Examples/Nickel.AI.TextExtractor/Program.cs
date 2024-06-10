@@ -1,4 +1,6 @@
-﻿using Nickel.AI.Extraction;
+﻿using Nickel.AI.Chunking;
+using Nickel.AI.Extraction;
+using Nickel.AI.Tokenization;
 
 namespace Nickel.AI.TextExtraction
 {
@@ -22,11 +24,18 @@ namespace Nickel.AI.TextExtraction
                     PrintUsage(options);
                     return;
                 }
+                var chunker = new NaiveContextualChunker(1024);
 
-                var extractor = new TextExtractor();
+                var extractor = new TextExtractor(chunker, new TiktokenTokenizer());
                 var extractedDocument = extractor.Extract(new Uri(options.UriPath));
 
-                Console.WriteLine(extractedDocument);
+                foreach (var (paragraph, idx) in extractedDocument.Paragraphs.Select((v, i) => (v, i)))
+                {
+                    Console.WriteLine($"PARAGRAPH {idx}");
+                    Console.WriteLine("".PadLeft(20, '-'));
+                    Console.WriteLine(paragraph);
+                    Console.WriteLine();
+                }
             }
             catch (Exception ex)
             {

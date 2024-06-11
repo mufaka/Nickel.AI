@@ -14,5 +14,8 @@
         // TODO: Is there a better generic representation of a Payload?
         public Dictionary<string, string>? Payload { get; set; }
 
+        // TODO: Using VectorPoint as a result as well as indexing. Should we separate? Score is a property specific to results.
+        public float? Score { get; set; }
+
     }
 }

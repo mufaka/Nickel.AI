@@ -135,7 +135,8 @@ namespace Nickel.AI.VectorDB
                 results.Add(new VectorPoint()
                 {
                     Id = point.Id.ToString(),
-                    Payload = MapFromPayload(point.Payload)
+                    Payload = MapFromPayload(point.Payload),
+                    Score = point.Score,
                 });
             }
 

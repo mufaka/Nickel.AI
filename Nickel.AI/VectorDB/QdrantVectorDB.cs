@@ -46,7 +46,7 @@ namespace Nickel.AI.VectorDB
 
         private Dictionary<string, string> MapFromPayload(IDictionary<string, Value> payload)
         {
-            return payload.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+            return payload.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.StringValue);
         }
 
         private List<PointStruct> MapToPointStructs(List<VectorPoint> points)
@@ -82,6 +82,12 @@ namespace Nickel.AI.VectorDB
             return pointStructs;
         }
 
+        public async Task<bool> CollectionExists(string name)
+        {
+            var client = GetClient();
+            return await client.CollectionExistsAsync(name);
+        }
+
         public async void CreateCollection(string name, ulong size, DistanceType distanceType)
         {
             var client = GetClient();
@@ -110,13 +116,26 @@ namespace Nickel.AI.VectorDB
 
             var results = new List<VectorPoint>();
 
+            // TODO: results contain a score:
+            /*
+                { 
+                    "id": { "uuid": "571c12de-1005-4616-b455-68d42087f8af" }, 
+                    "payload": { 
+                        "text": { 
+                            "stringValue": "FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints." 
+                        } 
+                    }, 
+                    "score": 0.597257, 
+                    "version": "2" 
+                }
+            */
+
             foreach (var point in points)
             {
                 results.Add(new VectorPoint()
                 {
                     Id = point.Id.ToString(),
-                    Payload = MapFromPayload(point.Payload),
-                    Vectors = point.Vectors.Vector.Data.ToArray()
+                    Payload = MapFromPayload(point.Payload)
                 });
             }
 

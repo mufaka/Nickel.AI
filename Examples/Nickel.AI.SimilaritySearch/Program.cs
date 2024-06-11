@@ -13,6 +13,71 @@ namespace Nickel.AI.SimilaritySearch
         static async Task Main(string[] args)
         {
             // Adapted from https://github.com/qdrant/examples/blob/master/rag-openai-qdrant/rag-openai-qdrant.ipynb
+            const string collectionName = "knowledge_base";
+            IVectorDB qdrant = new QdrantVectorDB("http://localhost:6334");
+
+            // IMPORTANT: This is slow. Because we are using the same instance of Ollama at localhost with two different
+            //            models (mxbai-embed-large for embedding, llama3 for chat completion), we deal with cold startup
+            //            type latency because Ollama has to switch models. We can use llama3 for embedding as well but
+            //            that vector size is 4096. Ideally the embedding endpoint would be separate from the llm endpoint.
+
+            // NOTE: qdrant allows for adding the documents directly to a collection, in a batch, without providing embeddings but not going to use that.
+            // embed the documents in qdrant. The client uses gRPC on port 6334
+            var embedder = new OllamaEmbedder("http://localhost:11434", "mxbai-embed-large");
+
+            await CreateKnowledgebase(collectionName, qdrant, embedder);
+
+            var prompt = "What tools should I need to use to build a web service using vector embeddings for search?";
+            var ollamaEndpoint = new Uri("http://localhost:11434");
+            var ollama = new OllamaApiClient(ollamaEndpoint);
+
+            // ask without giving a context
+            var completionRequest = new GenerateCompletionRequest();
+            completionRequest.Stream = false;
+            completionRequest.Prompt = prompt;
+            completionRequest.Model = "llama3";
+
+            var completionResponse = await ollama.GetCompletion(completionRequest);
+            Console.WriteLine(completionResponse.Response);
+            Console.WriteLine();
+
+            // find similar content in qdrant. get embedding for prompt, search qdrant
+            var promptEmbedding = await embedder.GetEmbedding(prompt);
+            var results = await qdrant.Search(collectionName, promptEmbedding.Select(f => (float)f).ToArray(), 3);
+
+            if (results != null)
+            {
+                var context = String.Join("\n", results.Select(r => r.Payload?["text"]));
+
+                var ragPrompt = @$"You are a software architect. 
+Answer the following question using the provided context. 
+If you can't find the answer, do not pretend you know it, but answer ""I don't know"".
+
+Question: {prompt.Trim()}
+
+Context:
+{context.Trim()}
+
+Answer:
+";
+                Console.WriteLine("RAG Prompt");
+                Console.WriteLine(ragPrompt);
+                Console.WriteLine();
+
+                Console.WriteLine("RAG Response");
+                completionRequest.Prompt = ragPrompt;
+                completionResponse = await ollama.GetCompletion(completionRequest);
+                Console.WriteLine(completionResponse.Response);
+                Console.WriteLine();
+            }
+        }
+
+        private static async Task CreateKnowledgebase(string collectionName, IVectorDB qdrant, OllamaEmbedder embedder)
+        {
+            // NOTE: because we are using new guids for the points, re-running this will create dupes. Just bail if collection
+            //       exists.
+            var collectionExists = await qdrant.CollectionExists(collectionName);
+            if (collectionExists) return;
 
             var documents = new string[] {
                 "Qdrant is a vector database & vector similarity search engine. It deploys as an API service providing search for the nearest high-dimensional vectors. With Qdrant, embeddings or neural network encoders can be turned into full-fledged applications for matching, searching, recommending, and much more!",
@@ -24,17 +89,9 @@ namespace Nickel.AI.SimilaritySearch
                 "SentenceTransformers is a Python framework for state-of-the-art sentence, text and image embeddings. You can use this framework to compute sentence / text embeddings for more than 100 languages. These embeddings can then be compared e.g. with cosine-similarity to find sentences with a similar meaning. This can be useful for semantic textual similar, semantic search, or paraphrase mining.",
                 "The cron command-line utility is a job scheduler on Unix-like operating systems. Users who set up and maintain software environments use cron to schedule jobs (commands or shell scripts), also known as cron jobs, to run periodically at fixed times, dates, or intervals." };
 
-            // NOTE: qdrant allows for adding the documents directly to a collection, in a batch, without providing embeddings but not going to use that.
-            // embed the documents in qdrant. The client uses gRPC on port 6334
-            IVectorDB qdrant = new QdrantVectorDB("http://localhost:6334");
-
-            // create a collection, use Cosine
-            const string collectionName = "knowledge_base";
-
             // TODO: double check the size parameter.
+            // create a collection, use Cosine
             qdrant.CreateCollection(collectionName, 1024, DistanceType.Cosine);
-
-            var embedder = new OllamaEmbedder("http://localhost:11434", "mxbai-embed-large");
 
             // create vector points from documents
             List<VectorPoint> points = new List<VectorPoint>();
@@ -42,6 +99,7 @@ namespace Nickel.AI.SimilaritySearch
             foreach (var document in documents)
             {
                 var point = new VectorPoint();
+
                 point.Id = Guid.NewGuid().ToString();
 
                 // TODO: embedder uses double[], qdrant client uses float[]. Casting here for now but this sucks because it
@@ -58,20 +116,6 @@ namespace Nickel.AI.SimilaritySearch
 
             // upsert points to qdrant
             qdrant.Upsert(collectionName, points);
-
-            var prompt = "What tools should I need to use to build a web service using vector embeddings for search?";
-            var ollamaEndpoint = new Uri("http://localhost:11434");
-            var ollama = new OllamaApiClient(ollamaEndpoint);
-
-            // ask without giving a context
-            var completionRequest = new GenerateCompletionRequest();
-            completionRequest.Stream = false;
-            completionRequest.Prompt = prompt;
-            completionRequest.Model = "llama3";
-
-            var completionResponse = await ollama.GetCompletion(completionRequest);
-            Console.WriteLine(completionResponse.Response);
-            Console.WriteLine();
         }
 
         /* -- No context response
@@ -112,5 +156,22 @@ Keep in mind that the specific requirements of your service may vary depending o
 
 Remember to carefully evaluate the trade-offs between these components and consider factors like performance, scalability, and maintainability as you design your web service.
     */
+        /*
+        RAG Response
+        Based on the provided context, I would recommend the following tools to build a web service using vector embeddings for search:
+
+        * FastAPI: As it's mentioned in the context, FastAPI is a suitable framework for building APIs with Python 3.7+. It provides high-performance and is well-suited for building RESTful APIs.
+        * PyTorch: Since you want to use vector embeddings for search, you'll likely need a machine learning library like PyTorch to train and generate these embeddings.
+        * Docker: As mentioned in the context, Docker can help with environment configuration and management. It's often useful when working with machine learning or AI-related projects that require specific dependencies.
+
+        Additionally, you may also want to consider other tools such as:
+
+        * A database (e.g., PostgreSQL, MongoDB) to store your search data
+        * A vector processing library like OpenCV or TensorFlow for computing similarities between vectors
+        * A programming language like Python (since FastAPI and PyTorch are both written in Python) or R for scripting and data manipulation
+        * A visualization tool like Matplotlib or Plotly to visualize the results of your search
+
+        I hope this helps!
+        */
     }
 }

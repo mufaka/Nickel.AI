@@ -10,17 +10,17 @@ namespace Nickel.AI.BasicRAG
         static async Task Main(string[] args)
         {
             // Adapted from https://github.com/qdrant/examples/blob/master/rag-openai-qdrant/rag-openai-qdrant.ipynb
-            const string collectionName = "knowledge_base";
+            const string collectionName = "knowledge_base_cos";
             IVectorDB qdrant = new QdrantVectorDB("http://localhost:6334");
 
-            // IMPORTANT: This is slow. Because we are using the same instance of Ollama at localhost with two different
+            // IMPORTANT: This can be slow. If we are using the same instance of Ollama at localhost with two different
             //            models (mxbai-embed-large for embedding, llama3 for chat completion), we deal with cold startup
-            //            type latency because Ollama has to switch models. We can use llama3 for embedding as well but
-            //            that vector size is 4096. Ideally the embedding endpoint would be separate from the llm endpoint.
+            //            type latency because Ollama has to switch models. 
 
             // NOTE: qdrant allows for adding the documents directly to a collection, in a batch, without providing embeddings but not going to use that.
             // embed the documents in qdrant. 
-            var embedder = new OllamaEmbedder("http://localhost:11434", "mxbai-embed-large");
+            // NOTE: Using an llm model for embedding gives better similarity results than the general purpose mxbai-embed-large model. 
+            var embedder = new OllamaEmbedder("http://localhost:11434", "llama3");
 
             await CreateKnowledgebase(collectionName, qdrant, embedder);
 
@@ -44,7 +44,7 @@ namespace Nickel.AI.BasicRAG
 
             if (results != null)
             {
-                var context = String.Join("\n", results.Select(r => r.Payload?["text"]));
+                var context = String.Join("\n", results.Select(r => r.Payload?["document"]));
 
                 var ragPrompt = @$"You are a software architect. 
 Answer the following question using the provided context. 
@@ -88,7 +88,7 @@ Answer:
 
             // TODO: double check the size parameter.
             // create a collection, use Cosine
-            qdrant.CreateCollection(collectionName, 1024, DistanceType.Cosine);
+            qdrant.CreateCollection(collectionName, 4096, DistanceType.Cosine);
 
             // create vector points from documents
             List<VectorPoint> points = new List<VectorPoint>();
@@ -105,7 +105,7 @@ Answer:
                 point.Vectors = embeddings.Select(f => (float)f).ToArray();
                 point.Payload = new Dictionary<string, string>()
                 {
-                    { "text", document }
+                    { "document", document }
                 };
 
                 points.Add(point);

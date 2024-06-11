@@ -11,7 +11,8 @@ namespace Nickel.AI.SimilaritySearch
 
             // NOTE: qdrant allows for adding the documents directly to a collection, in a batch, without providing embeddings but not going to use that.
             // embed the documents in qdrant.
-            var embedder = new OllamaEmbedder("http://localhost:11434", "mxbai-embed-large");
+            //var embedder = new OllamaEmbedder("http://localhost:11434", "mxbai-embed-large");
+            var embedder = new OllamaEmbedder("http://localhost:11434", "llama3");
 
             var collections = new List<(string, DistanceType)>()
             {
@@ -44,7 +45,7 @@ namespace Nickel.AI.SimilaritySearch
                     foreach (var result in results)
                     {
                         Console.WriteLine($"ID: {result.Id} SCORE: {result.Score}");
-                        Console.WriteLine(result.Payload?["text"]);
+                        Console.WriteLine(result.Payload?["document"]);
                         Console.WriteLine();
                     }
                 }
@@ -70,7 +71,7 @@ namespace Nickel.AI.SimilaritySearch
 
             // TODO: double check the size parameter.
             // create a collection, use Cosine
-            qdrant.CreateCollection(collectionName, 1024, distanceType);
+            qdrant.CreateCollection(collectionName, 4096, distanceType);
 
             // create vector points from documents
             List<VectorPoint> points = new List<VectorPoint>();
@@ -87,7 +88,7 @@ namespace Nickel.AI.SimilaritySearch
                 point.Vectors = embeddings.Select(f => (float)f).ToArray();
                 point.Payload = new Dictionary<string, string>()
                 {
-                    { "text", document }
+                    { "document", document }
                 };
 
                 points.Add(point);

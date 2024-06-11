@@ -17,7 +17,10 @@ namespace Nickel.AI.VectorDB
 
         private QdrantClient GetClient()
         {
-            return new QdrantClient(_url);
+            var uri = new Uri(_url);
+
+            // client wants host and port....
+            return new QdrantClient(uri.Host, uri.Port);
         }
 
         private Distance MapDistanceType(DistanceType distanceType)
@@ -82,6 +85,11 @@ namespace Nickel.AI.VectorDB
         public async void CreateCollection(string name, ulong size, DistanceType distanceType)
         {
             var client = GetClient();
+
+            // if the collection already exists, return.
+            var exists = await client.CollectionExistsAsync(name);
+            if (exists) return;
+
             await client.CreateCollectionAsync(name,
                 new VectorParams { Size = size, Distance = MapDistanceType(distanceType) });
         }

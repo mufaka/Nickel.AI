@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI", "Nickel.AI\Nick
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.TextTokenizer", "Examples\Nickel.AI.TextTokenizer\Nickel.AI.TextTokenizer.csproj", "{47207593-4B9E-4315-8368-8734E10C6202}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.SimilaritySearch", "Examples\Nickel.AI.SimilaritySearch\Nickel.AI.SimilaritySearch.csproj", "{E99B15F2-70B5-4CA4-9B0B-EB8C38A512BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{47207593-4B9E-4315-8368-8734E10C6202}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47207593-4B9E-4315-8368-8734E10C6202}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47207593-4B9E-4315-8368-8734E10C6202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E99B15F2-70B5-4CA4-9B0B-EB8C38A512BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E99B15F2-70B5-4CA4-9B0B-EB8C38A512BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E99B15F2-70B5-4CA4-9B0B-EB8C38A512BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E99B15F2-70B5-4CA4-9B0B-EB8C38A512BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

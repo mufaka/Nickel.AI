@@ -12,16 +12,16 @@ This is an attempt to get RAG working in .NET with a local LLM but incrementally
   2. ~~URL based~~
 
 ### Chunking
-  1. Explore semantic chunking of extracted text
+  1. ~~Explore semantic chunking of extracted text~~
 
 ### Tokenizing
-   1. Understand tokenization and how that relates to embedding
+   1. ~~Understand tokenization and how that relates to embedding~~
 
 ### Embedding
   1. ~~Use local LLM for embeddings (chose Ollama for ease of use and available models)~~
 
 ### Vector database
-  1. Choose between a local vector db (Weviate, Qdrant, Chroma, Milvus, etc)
+  1. ~~Choose between a local vector db (Weviate, Qdrant, Chroma, Milvus, etc)~~
 
 ### Data visualization and wrangling
   1. Visualize vector db

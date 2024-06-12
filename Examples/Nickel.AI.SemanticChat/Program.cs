@@ -1,7 +1,4 @@
-﻿#pragma warning disable SKEXP0010
-using OllamaSharp;
-using OllamaSharp.Models;
-using System.Text;
+﻿using Microsoft.SemanticKernel;
 
 namespace Nickel.AI.SemanticChat
 {
@@ -11,51 +8,27 @@ namespace Nickel.AI.SemanticChat
         {
             try
             {
+                // Using local Ollama with .AddOpenAIChatCompletion works! It supports, enough of, the OpenAI API. 
                 var ollamaEndpoint = new Uri("http://localhost:11434");
 
-                var ollama = new OllamaApiClient(ollamaEndpoint);
+#pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                Kernel kernel = Kernel.CreateBuilder()
+                    .AddOpenAIChatCompletion("llama3", ollamaEndpoint, null)
+                    .Build();
+#pragma warning restore SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
                 while (true)
                 {
                     Console.Write("Question: ");
-                    var message = ReadInput();
+                    Console.WriteLine(await kernel.InvokePromptAsync(Console.ReadLine()!));
+                    Console.WriteLine();
 
-                    if (!String.IsNullOrWhiteSpace(message))
-                    {
-                        var completionRequest = new GenerateCompletionRequest();
-                        completionRequest.Stream = false;
-                        completionRequest.Prompt = message;
-                        completionRequest.Model = "llama3";
-
-                        var completionResponse = await ollama.GetCompletion(completionRequest);
-                        Console.WriteLine(completionResponse.Response);
-                        Console.WriteLine();
-                    }
-                    else
-                    {
-                        break;
-                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-        }
-
-        private static string ReadInput()
-        {
-            var buff = new StringBuilder();
-
-            var input = Console.ReadLine();
-
-            while (input != "END")
-            {
-                buff.AppendLine(input);
-                input = Console.ReadLine();
-            }
-
-            return buff.ToString();
         }
     }
 }

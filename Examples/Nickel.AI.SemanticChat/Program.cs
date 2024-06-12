@@ -20,10 +20,33 @@ namespace Nickel.AI.SemanticChat
                 while (true)
                 {
                     Console.Write("Question: ");
-                    Console.WriteLine(await kernel.InvokePromptAsync(Console.ReadLine()!));
-                    Console.WriteLine();
+                    var prompt = Console.ReadLine();
 
+                    if (!String.IsNullOrWhiteSpace(prompt))
+                    {
+                        Console.WriteLine(await kernel.InvokePromptAsync(prompt));
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
+
+                // Do kernel functions work with Ollama?
+                kernel.ImportPluginFromFunctions("DateTimeHelpers",
+                [
+                    kernel.CreateFunctionFromMethod(() => $"{DateTime.Now:r}", "Now", "Gets the current date and time")
+                ]);
+
+                KernelFunction qa = kernel.CreateFunctionFromPrompt("""
+    The current date and time is {{ datetimehelpers.now }}.
+    {{ $input }}
+    """);
+                var arguments = new KernelArguments();
+                arguments["input"] = "What time is it?";
+
+                Console.WriteLine(await qa.InvokeAsync(kernel, arguments));
             }
             catch (Exception ex)
             {

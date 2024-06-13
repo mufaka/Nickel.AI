@@ -48,17 +48,24 @@ namespace Nickel.AI.SemanticChat
                         await foreach (var result in memory.SearchAsync(collectionName, prompt, limit: 3))
                             contextBuff.AppendLine(result.Metadata.Text);
 
-                        var ragPrompt = $@"Answer the following question including the provided context. If you can't answer the question, do not pretend you know it, but answer ""I don't know"".
+                        // if no memory, just use prompt.
+                        if (contextBuff.Length == 0)
+                        {
+                            Console.WriteLine(await kernel.InvokePromptAsync(prompt));
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            var ragPrompt = $@"Answer the following question using a mix of your own knowledge and the provided context. If you can't answer the question, do not pretend you know it, but answer ""I don't know"".
     
 Question: {prompt.Trim()}
 
 Context:
 {contextBuff.ToString().Trim()}";
 
-                        Console.WriteLine(ragPrompt);
-
-                        Console.WriteLine(await kernel.InvokePromptAsync(ragPrompt));
-                        Console.WriteLine();
+                            Console.WriteLine(await kernel.InvokePromptAsync(ragPrompt));
+                            Console.WriteLine();
+                        }
                     }
                     else
                     {

@@ -41,7 +41,7 @@
             {
                 return disjuncts[0].Formula();
             }
-            return string.Join(" ∨ ", disjuncts.Select(d => Sentence.Parenthesize(d.Formula())));
+            return string.Join(" OR ", disjuncts.Select(d => Sentence.Parenthesize(d.Formula())));
         }
 
         public override HashSet<string> Symbols()

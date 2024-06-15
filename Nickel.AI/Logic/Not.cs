@@ -33,7 +33,7 @@
 
         public override string Formula()
         {
-            return "¬" + Sentence.Parenthesize(Operand.Formula());
+            return "NOT " + Sentence.Parenthesize(Operand.Formula());
         }
 
         public override HashSet<string> Symbols()

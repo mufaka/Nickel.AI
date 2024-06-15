@@ -47,7 +47,7 @@
             {
                 return conjuncts[0].Formula();
             }
-            return string.Join(" ∧ ", conjuncts.Select(c => Sentence.Parenthesize(c.Formula())));
+            return string.Join(" AND ", conjuncts.Select(c => Sentence.Parenthesize(c.Formula())));
         }
 
         public override HashSet<string> Symbols()

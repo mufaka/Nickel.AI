@@ -4,7 +4,7 @@
     {
         // NOTE: Thought about forcing a Guid here because qdrant supports either guid or long for an ID but I think it's
         //       too restrictive considering current knowledge (zero) of other vector db's at the moment. This being an
-        //       API kind of class means we need to be less restrictive. Opting for using an Id strategy for now (IIdStrategy).
+        //       API kind of class means we need to be less restrictive. 
 
         public string Id { get; set; }
 

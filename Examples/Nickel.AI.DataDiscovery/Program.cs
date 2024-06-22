@@ -33,8 +33,13 @@ namespace Nickel.AI.DataDiscovery
                     chunkedData.Load(storage);
                 }
 
+                //ShowColumns(chunkedData);
+
                 // TODO: It would be nice to know the shape of the data (rows, cols).
-                ShowTop(chunkedData, 250);
+
+                ShowTop(chunkedData, 40, [
+                    "All Time Rank", "Artist", "Track", "Album Name", "Release Date",
+                    "Track Score", "Spotify Streams", "Spotify Popularity"]);
 
             }
             catch (Exception ex)
@@ -43,10 +48,26 @@ namespace Nickel.AI.DataDiscovery
             }
         }
 
-        private static void ShowTop(ChunkedData chunkedData, int rows)
+        private static void ShowColumns(ChunkedData chunkedData)
+        {
+            if (chunkedData.Frames.Count > 0)
+            {
+                var frameColumns = chunkedData.Frames[0].Data!.Columns;
+
+                foreach (DataFrameColumn column in frameColumns)
+                {
+                    Console.WriteLine(column.Name);
+                }
+
+            }
+        }
+
+        private static void ShowTop(ChunkedData chunkedData, int rows, string[] columns)
         {
             // use Spectre.Console table to display
             var table = new Table();
+            table.Border(TableBorder.MinimalHeavyHead);
+            table.ShowRowSeparators();
 
             var frameEnumerator = chunkedData.GetFrames();
             int displayCounter = 0;
@@ -61,21 +82,27 @@ namespace Nickel.AI.DataDiscovery
                 {
                     var frameColumns = frameEnumerator.Current.Data!.Columns;
 
-                    foreach (DataFrameColumn column in frameColumns)
+                    //foreach (DataFrameColumn column in frameColumns)
+                    foreach (string columnName in columns)
                     {
-                        table.AddColumn($"[green]{column.Name}[/]");
+                        table.AddColumn($"[green]{columnName}[/]");
                     }
                 }
 
                 foreach (DataFrameRow dataFrameRow in frameEnumerator.Current.Data!.Rows)
                 {
                     // Spectre.Console treats [ and ] as markup, need to sanitize
-#pragma warning disable CS8602 // Dereference of a possibly null reference. x will not be null. x.Value is checked for null but IDE still warns.
-                    var rowData = dataFrameRow.GetValues().Select(
-                        x => x.Value != null
-                        ? x.Value.ToString().Replace('[', ' ').Replace(']', ' ')
-                        : "").ToArray();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                    var rowValues = dataFrameRow.GetValues();
+
+                    // TODO: sort the row data in the order of passed columns
+                    var rowData = new string[columns.Length];
+
+                    for (int i = 0; i < columns.Length; i++)
+                    {
+                        var rowValue = rowValues.Where(x => x.Key == columns[i]).FirstOrDefault().Value;
+                        rowData[i] = rowValue == null ? "" : rowValue.ToString().Replace('[', ' ').Replace(']', ' ');
+                    }
+
                     table.AddRow(rowData);
                     displayCounter++;
 

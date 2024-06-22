@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using Microsoft.Data.Analysis;
+using Microsoft.ML;
 
 namespace Nickel.AI.Data
 {
@@ -11,6 +12,8 @@ namespace Nickel.AI.Data
         public void Initialize(IDataLoader dataLoader, IDataFrameStorage storage)
         {
             int ordinal = 1;
+
+            // NOTE: IDataFrameStorage implementations should handle existing data? Clear? Warn? Abort?
 
             foreach (var frame in dataLoader.LoadData())
             {
@@ -29,6 +32,25 @@ namespace Nickel.AI.Data
         public void Load(IDataFrameStorage storage)
         {
             _frames = storage.LoadChunks();
+        }
+
+        public IEnumerator<ChunkedDataFrame> GetFrames()
+        {
+            foreach (var frame in _frames)
+            {
+                yield return frame;
+            }
+        }
+
+        public IEnumerator<DataFrameRow> GetRows()
+        {
+            foreach (var frame in _frames)
+            {
+                foreach (DataFrameRow row in frame.Data!.Rows)
+                {
+                    yield return row;
+                }
+            }
         }
 
         // TODO: Implement IDataView for this? 

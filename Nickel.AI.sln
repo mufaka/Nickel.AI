@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.SimilaritySearch"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.BasicRAG", "Examples\Nickel.AI.BasicRAG\Nickel.AI.BasicRAG.csproj", "{53DE57CF-3DB0-4D11-9440-61A62260DBAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.LogicTest", "Examples\Nickel.AI.LogicTest\Nickel.AI.LogicTest.csproj", "{F552AC88-95FD-46E8-8908-9161AA11D252}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.LogicTest", "Examples\Nickel.AI.LogicTest\Nickel.AI.LogicTest.csproj", "{F552AC88-95FD-46E8-8908-9161AA11D252}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.DataDiscovery", "Examples\Nickel.AI.DataDiscovery\Nickel.AI.DataDiscovery.csproj", "{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{F552AC88-95FD-46E8-8908-9161AA11D252}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F552AC88-95FD-46E8-8908-9161AA11D252}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F552AC88-95FD-46E8-8908-9161AA11D252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

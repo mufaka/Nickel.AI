@@ -1,12 +1,12 @@
 ﻿using Microsoft.Data.Analysis;
-using Microsoft.ML;
 
 namespace Nickel.AI.Data
 {
     public class ChunkedData
     {
         private List<ChunkedDataFrame> _frames = new List<ChunkedDataFrame>();
-        private long? _rowCount = 0;
+        public ChunkedDataMeta MetaData { get; private set; } = new ChunkedDataMeta();
+
         public List<ChunkedDataFrame> Frames { get { return _frames; } }
 
         public void Initialize(IDataLoader dataLoader, IDataFrameStorage storage)
@@ -19,7 +19,9 @@ namespace Nickel.AI.Data
             {
                 var chunkedData = new ChunkedDataFrame(storage, ordinal);
                 chunkedData.Data = frame;
-                _rowCount += ((IDataView)frame).GetRowCount();
+
+                MetaData.RowCount += frame.Rows.Count;
+                MetaData.ColumnCount = frame.Columns.Count;
                 chunkedData.Save();
                 chunkedData.Unload();
 
@@ -27,10 +29,14 @@ namespace Nickel.AI.Data
 
                 ordinal++;
             }
+
+            storage.SaveMetaData(MetaData);
         }
 
         public void Load(IDataFrameStorage storage)
         {
+            var metaData = storage.LoadMetaData();
+            if (metaData != null) { MetaData = metaData; }
             _frames = storage.LoadChunks();
         }
 

@@ -35,11 +35,11 @@ namespace Nickel.AI.DataDiscovery
 
                 //ShowColumns(chunkedData);
 
-                // TODO: It would be nice to know the shape of the data (rows, cols).
-
                 ShowTop(chunkedData, 40, [
                     "All Time Rank", "Artist", "Track", "Album Name", "Release Date",
                     "Track Score", "Spotify Streams", "Spotify Popularity"]);
+
+                Console.WriteLine($"Data has a shape of {chunkedData.MetaData.RowCount},{chunkedData.MetaData.ColumnCount} (Rows,Columns)");
 
             }
             catch (Exception ex)

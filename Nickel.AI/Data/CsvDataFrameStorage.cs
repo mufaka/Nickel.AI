@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Analysis;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Nickel.AI.Data
@@ -57,6 +58,26 @@ namespace Nickel.AI.Data
             }
 
             return list;
+        }
+
+        private const string META_FILE_NAME = "chunked_meta.json";
+
+        public void SaveMetaData(ChunkedDataMeta meta)
+        {
+            var serialized = JsonSerializer.Serialize(meta);
+            File.WriteAllText(Path.Combine(RootPath, META_FILE_NAME), serialized);
+        }
+
+        public ChunkedDataMeta? LoadMetaData()
+        {
+            var metaFileName = Path.Combine(RootPath, META_FILE_NAME);
+
+            if (File.Exists(metaFileName))
+            {
+                return JsonSerializer.Deserialize<ChunkedDataMeta>(File.ReadAllText(metaFileName));
+            }
+
+            return null;
         }
     }
 }

@@ -9,5 +9,7 @@ namespace Nickel.AI.Data
         void Save(int ordinal, DataFrame data);
         List<ChunkedDataFrame> LoadChunks();
         string GetFileName(int ordinal);
+        void SaveMetaData(ChunkedDataMeta meta);
+        ChunkedDataMeta? LoadMetaData();
     }
 }

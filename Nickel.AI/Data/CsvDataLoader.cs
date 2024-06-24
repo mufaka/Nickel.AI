@@ -74,7 +74,10 @@ namespace Nickel.AI.Data
                     }
                 }
 
-                yield return frame;
+                if (frame.Rows.Count > 0)
+                {
+                    yield return frame.Clone();
+                }
             }
         }
 

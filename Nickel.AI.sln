@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.LogicTest", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.DataDiscovery", "Examples\Nickel.AI.DataDiscovery\Nickel.AI.DataDiscovery.csproj", "{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.Desktop", "Nickel.AI.Desktop\Nickel.AI.Desktop.csproj", "{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49D08735-0F08-42A5-B6AC-C8DEE3D20BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

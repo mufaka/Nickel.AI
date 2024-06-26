@@ -33,7 +33,7 @@ namespace Nickel.AI.DataDiscovery
                     chunkedData.Load(storage);
                 }
 
-                //ShowColumns(chunkedData);
+                ShowColumns(chunkedData);
 
                 ShowTop(chunkedData, 40, [
                     "All Time Rank", "Artist", "Track", "Album Name", "Release Date",
@@ -54,11 +54,13 @@ namespace Nickel.AI.DataDiscovery
             {
                 var frameColumns = chunkedData.Frames[0].Data!.Columns;
 
+                var outputColumns = new List<Text>();
                 foreach (DataFrameColumn column in frameColumns)
                 {
-                    Console.WriteLine(column.Name);
+                    outputColumns.Add(new Text(column.Name, new Style(Color.Orange1, Color.Black, Decoration.Underline)));
                 }
 
+                AnsiConsole.Write(new Columns(outputColumns));
             }
         }
 
@@ -100,7 +102,9 @@ namespace Nickel.AI.DataDiscovery
                     for (int i = 0; i < columns.Length; i++)
                     {
                         var rowValue = rowValues.Where(x => x.Key == columns[i]).FirstOrDefault().Value;
-                        rowData[i] = rowValue == null ? "" : rowValue.ToString().Replace('[', ' ').Replace(']', ' ');
+#pragma warning disable CS8604 // Possible null reference argument.
+                        rowData[i] = rowValue == null ? "" : Markup.Escape(rowValue.ToString());
+#pragma warning restore CS8604 // Possible null reference argument.
                     }
 
                     table.AddRow(rowData);

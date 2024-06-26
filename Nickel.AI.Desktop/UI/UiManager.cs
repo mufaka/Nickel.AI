@@ -12,17 +12,19 @@ public static class UiManager
     public static void Setup()
     {
         rlImGui.Setup(true);
+
+        // enable docking.
+        var io = ImGui.GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
         SetStyle();
 
+        /*
         foreach (var panel in Panels)
             panel.Detach();
 
         Panels.Clear();
-
-        Panels.Add(new ExamplePanel());
-
-        foreach (var panel in Panels)
-            panel.Attach();
+        */
     }
 
     private static void DoMainMenu()
@@ -37,16 +39,29 @@ public static class UiManager
                 ImGui.EndMenu();
             }
 
-            /*
-            if (ImGui.BeginMenu("Window"))
+            if (Panels.Count > 0)
             {
-                ImGui.MenuItem("ImGui Demo", string.Empty, ref ImGuiDemoOpen);
-                ImGui.MenuItem("Image Viewer", string.Empty, ref ImageViewer.Open);
-                ImGui.MenuItem("3D View", string.Empty, ref SceneView.Open);
+                // get distinct menu values from panels
+                var menus = Panels.Select(x => x.Menu).Distinct().Order().ToList();
 
-                ImGui.EndMenu();
+                foreach (var menu in menus)
+                {
+                    if (ImGui.BeginMenu(menu))
+                    {
+                        // get all panels for this menu
+                        var menuItems = Panels.Where(x => x.Menu == menu).ToList();
+
+                        foreach (var menuItem in menuItems)
+                        {
+                            ImGui.MenuItem(menuItem.Label, string.Empty, ref menuItem.Open);
+                        }
+
+                        ImGui.EndMenu();
+                    }
+
+                }
             }
-            */
+
             ImGui.EndMainMenuBar();
         }
     }
@@ -73,6 +88,7 @@ public static class UiManager
 
         foreach (var panel in Panels)
             panel.Render();
+
         rlImGui.End();
     }
 

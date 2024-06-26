@@ -4,15 +4,19 @@ namespace Nickel.AI.Desktop.UI;
 
 public class ExamplePanel : Panel
 {
+    public ExamplePanel(string menu = "Examples", string label = "Label")
+    {
+        Menu = menu;
+        Label = label;
+    }
+
     public override void Attach()
     {
-        Console.WriteLine("Attached layer");
         Open = true;
     }
 
     public override void Detach()
     {
-        Console.WriteLine("Detached layer");
         Open = false;
     }
 
@@ -21,7 +25,7 @@ public class ExamplePanel : Panel
         bool isOpen = Open;
         if (!isOpen) return;
 
-        if (ImGui.Begin("Example Window", ref isOpen))
+        if (ImGui.Begin(Label, ref isOpen))
         {
             ImGui.Text("Here's some text.");
             ImGui.End();

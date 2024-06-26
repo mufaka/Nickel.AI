@@ -6,8 +6,8 @@ public class ExamplePanel : Panel
 {
     public ExamplePanel(string menu = "Examples", string label = "Label")
     {
-        WindowSize.X = 200;
-        WindowSize.Y = 200;
+        DefaultWindowSize.X = 200;
+        DefaultWindowSize.Y = 200;
         MenuCategory = menu;
         Label = label;
     }

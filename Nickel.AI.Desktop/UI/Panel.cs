@@ -6,7 +6,7 @@ namespace Nickel.AI.Desktop.UI;
 public abstract class Panel
 {
     public bool Open = false;
-    public Vector2 WindowSize = new Vector2(600, 400);
+    public Vector2 DefaultWindowSize = new Vector2(600, 400);
 
     public string MenuCategory { get; set; } = "Menu";
     public string Label { get; set; } = "Label";
@@ -28,7 +28,7 @@ public abstract class Panel
 
         // NOTE: imgui.ini persists changes to sizing and location. This will set for initial load
         //       ONLY if there is no .ini entry for a panel with this name.
-        ImGui.SetNextWindowSize(WindowSize, ImGuiCond.Once); // Once means once per session (app run), FirstUseEver means respect .ini after first use
+        ImGui.SetNextWindowSize(DefaultWindowSize, ImGuiCond.Once); // Once means once per session (app run), FirstUseEver means respect .ini after first use
 
         if (ImGui.Begin(Label, ref isOpen))
         {

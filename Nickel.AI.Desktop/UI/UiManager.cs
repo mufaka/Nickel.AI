@@ -42,14 +42,14 @@ public static class UiManager
             if (Panels.Count > 0)
             {
                 // get distinct menu values from panels
-                var menus = Panels.Select(x => x.Menu).Distinct().Order().ToList();
+                var menus = Panels.Select(x => x.MenuCategory).Distinct().Order().ToList();
 
                 foreach (var menu in menus)
                 {
                     if (ImGui.BeginMenu(menu))
                     {
                         // get all panels for this menu
-                        var menuItems = Panels.Where(x => x.Menu == menu).ToList();
+                        var menuItems = Panels.Where(x => x.MenuCategory == menu).ToList();
 
                         foreach (var menuItem in menuItems)
                         {

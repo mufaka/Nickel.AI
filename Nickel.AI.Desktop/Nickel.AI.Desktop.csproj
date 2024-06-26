@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Nickel.AI\Nickel.AI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Resources\IckyticketMono-nKpJ.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

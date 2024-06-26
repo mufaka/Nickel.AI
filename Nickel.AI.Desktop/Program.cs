@@ -20,11 +20,13 @@ namespace Nickel.AI.Desktop
             InitWindow(1280, 720, "Nickel AI Desktop");
 
             // NOTE: Panels need to be added before Setup is called.
+            /*
             UI.UiManager.Panels.Add(new ExamplePanel("Examples", "Example 1"));
             UI.UiManager.Panels.Add(new ExamplePanel("Examples", "Example 2"));
-
             UI.UiManager.Panels.Add(new ExamplePanel("Other", "Example 3"));
             UI.UiManager.Panels.Add(new ExamplePanel("Another", "Example 4"));
+            */
+            UI.UiManager.Panels.Add(new ChatPanel());
 
             UI.UiManager.Setup();
 

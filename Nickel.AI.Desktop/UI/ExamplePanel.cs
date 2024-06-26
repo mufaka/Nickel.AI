@@ -6,32 +6,16 @@ public class ExamplePanel : Panel
 {
     public ExamplePanel(string menu = "Examples", string label = "Label")
     {
-        Menu = menu;
+        WindowSize.X = 200;
+        WindowSize.Y = 200;
+        MenuCategory = menu;
         Label = label;
     }
 
-    public override void Attach()
+    public override void DoRender()
     {
-        Open = true;
-    }
-
-    public override void Detach()
-    {
-        Open = false;
-    }
-
-    public override void Render()
-    {
-        bool isOpen = Open;
-        if (!isOpen) return;
-
-        if (ImGui.Begin(Label, ref isOpen))
-        {
-            ImGui.Text("Here's some text.");
-            ImGui.End();
-        }
-
-        if (!isOpen) Detach();
+        ImGui.Text("Here's some text.");
+        ImGui.End();
     }
 
     public override void Update()

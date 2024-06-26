@@ -7,6 +7,7 @@ namespace Nickel.AI.Desktop.UI;
 public static class UiManager
 {
     public static List<Panel> Panels { get; set; } = new();
+    public static bool Quit = false;
 
     public static void Setup()
     {
@@ -15,10 +16,39 @@ public static class UiManager
 
         foreach (var panel in Panels)
             panel.Detach();
+
         Panels.Clear();
+
         Panels.Add(new ExamplePanel());
+
         foreach (var panel in Panels)
             panel.Attach();
+    }
+
+    private static void DoMainMenu()
+    {
+        if (ImGui.BeginMainMenuBar())
+        {
+            if (ImGui.BeginMenu("File"))
+            {
+                if (ImGui.MenuItem("Exit"))
+                    Quit = true;
+
+                ImGui.EndMenu();
+            }
+
+            /*
+            if (ImGui.BeginMenu("Window"))
+            {
+                ImGui.MenuItem("ImGui Demo", string.Empty, ref ImGuiDemoOpen);
+                ImGui.MenuItem("Image Viewer", string.Empty, ref ImageViewer.Open);
+                ImGui.MenuItem("3D View", string.Empty, ref SceneView.Open);
+
+                ImGui.EndMenu();
+            }
+            */
+            ImGui.EndMainMenuBar();
+        }
     }
 
     public static void Shutdown()
@@ -37,10 +67,10 @@ public static class UiManager
     public static void Render()
     {
         rlImGui.Begin();
+        DoMainMenu();
 
-        // NOTE: How to get dockspace_id?
         ImGui.DockSpaceOverViewport(ImGui.GetID("NickelAI"), ImGui.GetMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
-        ImGui.ShowDemoWindow();
+
         foreach (var panel in Panels)
             panel.Render();
         rlImGui.End();
@@ -118,6 +148,7 @@ public static class UiManager
         var io = ImGui.GetIO();
         io.Fonts.Clear();
         io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"), 24);
+        //io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "IckyticketMono-nKpJ.ttf"), 24);
         rlImGui.ReloadFonts();
     }
 }

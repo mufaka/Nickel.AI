@@ -20,16 +20,18 @@ namespace Nickel.AI.Desktop
 
             UI.UiManager.Setup();
 
-            while (!Raylib.WindowShouldClose())
+            while (!Raylib.WindowShouldClose() && !UI.UiManager.Quit)
             {
                 // Update:
                 UI.UiManager.Update();
 
                 // Render:
                 Raylib.BeginDrawing();
-                Raylib.ClearBackground(Color.Black);
+                Raylib.ClearBackground(new Color(32, 32, 32, 100));
+
                 UI.UiManager.Render();
-                Raylib.DrawFPS(0, 0);
+
+                //Raylib.DrawFPS(0, 0);
                 Raylib.EndDrawing();
             }
 

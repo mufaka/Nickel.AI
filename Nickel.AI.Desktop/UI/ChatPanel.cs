@@ -11,7 +11,6 @@ namespace Nickel.AI.Desktop.UI
     {
         private static string _question = string.Empty;
         private static string _answer = string.Empty;
-        private static string _wordWrappedAnswer = string.Empty;
 
         public ChatPanel()
         {
@@ -55,18 +54,18 @@ namespace Nickel.AI.Desktop.UI
             {
                 ImGui.SetCursorPos(new Vector2(20, 80));
 
-                _wordWrappedAnswer = WordWrap(_answer, windowWidth - 45.0f);
+                var wordWrappedAnswer = WordWrap(_answer, windowWidth - 45.0f);
 
                 ImGui.PushID("chat_answer");
-                uint bufferLength = Math.Max((uint)_wordWrappedAnswer.Length, 4096);
+                uint bufferLength = Math.Max((uint)wordWrappedAnswer.Length, 4096);
 
-                ImGui.InputTextMultiline("##ans", ref _wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
+                ImGui.InputTextMultiline("##ans", ref wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
 
                 ImGui.PopID();
             }
         }
 
-        private string WordWrap(string text, float windowWidth)
+        private static string WordWrap(string text, float windowWidth)
         {
             if (String.IsNullOrEmpty(text))
             {
@@ -84,16 +83,60 @@ namespace Nickel.AI.Desktop.UI
 
             foreach (string line in lines)
             {
-                if (!String.IsNullOrWhiteSpace(line))
-                {
-                    var chunks = line.Chunk(charsPerLine).Select(x => new string(x)).ToList();
-
-                    buff.AppendLine(String.Join("\r\n  ", chunks));
-                    buff.AppendLine();
-                }
+                buff.Append(WrapLine(line, charsPerLine));
+                buff.AppendLine();
             }
 
             return buff.ToString().Trim();
+        }
+
+        private static string WrapLine(string line, int maxChars)
+        {
+            // NOTE: This predetermines the amount of chunks the line
+            //       needs to be split into. Knowing that, we use the
+            //       known indices for the splits to check if we are
+            //       splitting on a space. If it's not a space and the next
+            //       character is a space, split there. If not, work backwards
+            //       to find the first occurence of a space and split on that. 
+
+            // How many chunks?
+            var chunks = Math.Ceiling((double)line.Length / maxChars);
+
+            // How far back have we gone to find a good split
+            int offSet = 0;
+            var buff = new StringBuilder();
+
+            // loop through the amount of chunks
+            for (int i = 0; i < chunks; i++)
+            {
+                var chunkStart = i * maxChars - offSet;
+                var chunkEnd = Math.Min(chunkStart + maxChars - 1, line.Length - 1);
+                var nextChunkBegin = chunkEnd + 1;
+
+                if (line[chunkEnd] != ' ' && nextChunkBegin < line.Length)
+                {
+                    int space = line.LastIndexOf(' ', chunkEnd, maxChars);
+
+                    if (space != -1)
+                    {
+                        offSet += chunkEnd - space;
+                        chunkEnd = space;
+                        // it's possible that we need more chunks because we've split
+                        // more times than the original estimate.
+                        chunks = chunks + (offSet % maxChars);
+                    }
+                }
+
+                // because we have possibly added to the chunk count, we may overflow.
+                // break out of the loop, we are done.
+                if (chunkStart > line.Length - 1 || chunkEnd > line.Length - 1) break;
+
+                // indexer doesn't like maths in syntax, indexer is exclusive so need to add 1 to end
+                int exclusiveEnd = chunkEnd + 1;
+                buff.AppendLine(line[chunkStart..exclusiveEnd]);
+            }
+
+            return buff.ToString();
         }
 
         private async void AskOllama()

@@ -1,6 +1,8 @@
 using ImGuiNET;
+using Raylib_cs;
 using rlImGui_cs;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Nickel.AI.Desktop.UI;
 
@@ -18,6 +20,7 @@ public static class UiManager
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
         SetStyle();
+        SetupClipboard();
 
         /*
         foreach (var panel in Panels)
@@ -93,6 +96,37 @@ public static class UiManager
 
         rlImGui.End();
     }
+
+    // NOTE: The following code is copied from rlImgui-cs with the exception
+    //       of moving getClip and setClip to static variables to prevent
+    //       the delegates from getting garbage collected and causing
+    //       a hard crash with System.ExecutionEngineException.
+    unsafe internal static sbyte* rImGuiGetClipText(IntPtr userData)
+    {
+        return Raylib.GetClipboardText();
+    }
+
+    unsafe internal static void rlImGuiSetClipText(IntPtr userData, sbyte* text)
+    {
+        Raylib.SetClipboardText(text);
+    }
+
+    private unsafe delegate sbyte* GetClipTextCallback(IntPtr userData);
+    private unsafe delegate void SetClipTextCallback(IntPtr userData, sbyte* text);
+
+    private unsafe static GetClipTextCallback getClip = new GetClipTextCallback(rImGuiGetClipText);
+    private unsafe static SetClipTextCallback setClip = new SetClipTextCallback(rlImGuiSetClipText);
+
+    private static void SetupClipboard()
+    {
+        ImGuiIOPtr io = ImGui.GetIO();
+        unsafe
+        {
+            io.SetClipboardTextFn = Marshal.GetFunctionPointerForDelegate(setClip);
+            io.GetClipboardTextFn = Marshal.GetFunctionPointerForDelegate(getClip);
+        }
+    }
+    // NOTE: End rlImgui-cs code copy/paste/modify.
 
     private static void SetStyle()
     {

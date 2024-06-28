@@ -57,24 +57,12 @@ namespace Nickel.AI.Desktop.UI
 
                 _wordWrappedAnswer = WordWrap(_answer, windowWidth - 45.0f);
 
-                try
-                {
-                    // TODO: Copy / Paste is borked on Windows for this. ctrl-c and ctrl-v hard crash.
-                    //       Need to understand the clipboard handling for this in order to trouble shoot.
+                ImGui.PushID("chat_answer");
+                uint bufferLength = Math.Max((uint)_wordWrappedAnswer.Length, 4096);
 
-                    ImGui.PushID("chat_answer");
-                    uint bufferLength = Math.Max((uint)_wordWrappedAnswer.Length, 4096);
+                ImGui.InputTextMultiline("##ans", ref _wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
 
-                    ImGui.InputTextMultiline("##ans", ref _wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
-
-                    ImGui.PopID();
-                }
-                catch (Exception ex)
-                {
-                    // NOTE: this exception isn't caught when it's a System.ExecutionEngineException. The error is with
-                    //       unsafe/unmanaged code elsewhere in the code. Most likely in ImGui.NET.
-                    Console.WriteLine(ex.ToString());
-                }
+                ImGui.PopID();
             }
         }
 
@@ -112,6 +100,7 @@ namespace Nickel.AI.Desktop.UI
         {
             if (_question.Length > 0)
             {
+                // TODO: make the endpoint and model configurable.
                 var ollamaEndpoint = new Uri("http://localhost:11434");
                 var ollama = new OllamaApiClient(ollamaEndpoint);
 

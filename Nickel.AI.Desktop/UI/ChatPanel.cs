@@ -10,33 +10,39 @@ namespace Nickel.AI.Desktop.UI
     public class ChatPanel : Panel
     {
         private static string _question = string.Empty;
-        private string _answer = string.Empty;
+        private static string _answer = string.Empty;
+        private static string _wordWrappedAnswer = string.Empty;
 
         public ChatPanel()
         {
             Label = "Ollama Chat";
             MenuCategory = "Chat";
-            DefaultWindowSize.X = 600;
-            DefaultWindowSize.Y = 400;
+            DefaultWindowSize.X = 800;
+            DefaultWindowSize.Y = 600;
         }
 
         // NOTE: https://raa.is/ImStudio/ is a wysiwyg designer for imgui. Will have to port output to C#.
-        public override void DoRender()
+        public unsafe override void DoRender()
         {
             // NOTE: ImGui isn't really event driven so things like capturing "Enter" key
             //       inside of InputText isn't straight forward. It returns true if the
             //       text has changed. We don't want to ask Ollama on text changed.
             //       ImGuiInputTextFlags.EnterReturnsTrue changes that behavior to what we want.
+            float windowWidth = ImGui.GetWindowWidth();
+            float windowHeight = ImGui.GetWindowHeight();
+
 
             ImGui.SetCursorPos(new Vector2(20, 40));
-            ImGui.PushItemWidth(500);
-            if (ImGui.InputText("", ref _question, 128, ImGuiInputTextFlags.EnterReturnsTrue))
+            ImGui.PushItemWidth(windowWidth - 100);
+            ImGui.PushID("chat_question");
+            if (ImGui.InputText("", ref _question, 256, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 AskOllama();
             }
+            ImGui.PopID();
             ImGui.PopItemWidth();
 
-            ImGui.SetCursorPos(new Vector2(530, 40));
+            ImGui.SetCursorPos(new Vector2(windowWidth - 60, 40));
 
             // NOTE: This will return true if the button was clicked ...
             if (ImGui.Button("Ask"))
@@ -47,12 +53,32 @@ namespace Nickel.AI.Desktop.UI
             // TODO: Sizing? Border? Word wrap?
             if (!String.IsNullOrEmpty(_answer))
             {
-                ImGui.SetCursorPos(new Vector2(20, 70));
-                ImGui.Text(WordWrap(_answer));
+                ImGui.SetCursorPos(new Vector2(20, 80));
+
+                _wordWrappedAnswer = WordWrap(_answer, windowWidth - 45.0f);
+
+                try
+                {
+                    // TODO: Copy / Paste is borked on Windows for this. ctrl-c and ctrl-v hard crash.
+                    //       Need to understand the clipboard handling for this in order to trouble shoot.
+
+                    ImGui.PushID("chat_answer");
+                    uint bufferLength = Math.Max((uint)_wordWrappedAnswer.Length, 4096);
+
+                    ImGui.InputTextMultiline("##ans", ref _wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
+
+                    ImGui.PopID();
+                }
+                catch (Exception ex)
+                {
+                    // NOTE: this exception isn't caught when it's a System.ExecutionEngineException. The error is with
+                    //       unsafe/unmanaged code elsewhere in the code. Most likely in ImGui.NET.
+                    Console.WriteLine(ex.ToString());
+                }
             }
         }
 
-        private string WordWrap(string text)
+        private string WordWrap(string text, float windowWidth)
         {
             if (String.IsNullOrEmpty(text))
             {
@@ -61,7 +87,6 @@ namespace Nickel.AI.Desktop.UI
 
             // get the width of a wide character
             float characterWidth = ImGui.CalcTextSize("#").X;
-            float windowWidth = ImGui.GetWindowSize().X;
 
             // leave a couple character margin for error in window width
             int charsPerLine = (int)Math.Floor(windowWidth / characterWidth) - 2;

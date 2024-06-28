@@ -12,12 +12,12 @@ namespace Nickel.AI.Desktop
                                   ConfigFlags.ResizableWindow);
             Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
             Raylib.InitWindow(width, height, title);
-            Raylib.SetWindowMinSize(800, 600);
+            Raylib.SetWindowMinSize(1024, 800);
         }
 
         static void Main(string[] args)
         {
-            InitWindow(1280, 720, "Nickel AI Desktop");
+            InitWindow(1440, 1080, "Nickel AI Desktop");
 
             // NOTE: Panels need to be added before Setup is called.
             /*

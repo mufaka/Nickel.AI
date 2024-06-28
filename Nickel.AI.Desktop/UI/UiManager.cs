@@ -89,6 +89,8 @@ public static class UiManager
         foreach (var panel in Panels)
             panel.Render();
 
+        //ImGui.ShowDemoWindow();
+
         rlImGui.End();
     }
 

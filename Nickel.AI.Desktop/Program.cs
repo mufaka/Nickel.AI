@@ -9,15 +9,18 @@ namespace Nickel.AI.Desktop
         {
             Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint |
                                   ConfigFlags.VSyncHint |
-                                  ConfigFlags.ResizableWindow);
+                                  ConfigFlags.ResizableWindow |
+                                  ConfigFlags.MaximizedWindow);
             Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
             Raylib.InitWindow(width, height, title);
             Raylib.SetWindowMinSize(1024, 800);
+
+            Raylib.MaximizeWindow();
         }
 
         static void Main(string[] args)
         {
-            InitWindow(1440, 1080, "Nickel AI Desktop");
+            InitWindow(1600, 1200, "Nickel AI Desktop");
 
             // NOTE: Panels need to be added before Setup is called.
             /*

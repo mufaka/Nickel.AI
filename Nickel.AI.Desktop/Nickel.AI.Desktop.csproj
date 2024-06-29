@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.90.8.1" />
+    <PackageReference Include="Microsoft.Data.Analysis" Version="0.22.0-preview.24271.1" />
     <PackageReference Include="Raylib-cs" Version="6.1.1" />
     <PackageReference Include="rlImgui-cs" Version="2.0.3" />
   </ItemGroup>

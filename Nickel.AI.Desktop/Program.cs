@@ -30,6 +30,7 @@ namespace Nickel.AI.Desktop
             UI.UiManager.Panels.Add(new ExamplePanel("Another", "Example 4"));
             */
             UI.UiManager.Panels.Add(new ChatPanel());
+            UI.UiManager.Panels.Add(new ExamplePanel("Examples", "Data Frame Table"));
 
             UI.UiManager.Setup();
 

@@ -32,6 +32,14 @@ namespace Nickel.AI.Desktop
             UI.UiManager.Panels.Add(new ChatPanel());
             UI.UiManager.Panels.Add(new ExamplePanel("Examples", "Data Frame Table"));
 
+            var raylibPanel = new ExampleRaylibPanel();
+            raylibPanel.Label = "Raylib drawn inside ImGUI";
+            raylibPanel.MenuCategory = "Examples";
+            raylibPanel.DefaultWindowSize.X = 600;
+            raylibPanel.DefaultWindowSize.Y = 400;
+
+            UI.UiManager.Panels.Add(raylibPanel);
+
             UI.UiManager.Setup();
 
             while (!Raylib.WindowShouldClose() && !UI.UiManager.Quit)

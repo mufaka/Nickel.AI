@@ -23,8 +23,6 @@ public class ExamplePanel : Panel
 
     public override void DoRender()
     {
-        ImGui.Text("Here's some text.");
-
         DataFrameTable.Render();
 
         ImGui.End();

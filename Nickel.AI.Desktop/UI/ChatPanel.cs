@@ -32,7 +32,7 @@ namespace Nickel.AI.Desktop.UI
 
 
             ImGui.SetCursorPos(new Vector2(20, 40));
-            ImGui.PushItemWidth(windowWidth - 100);
+            ImGui.PushItemWidth(windowWidth - 120);
             ImGui.PushID("chat_question");
             if (ImGui.InputText("", ref _question, 256, ImGuiInputTextFlags.EnterReturnsTrue))
             {
@@ -41,7 +41,7 @@ namespace Nickel.AI.Desktop.UI
             ImGui.PopID();
             ImGui.PopItemWidth();
 
-            ImGui.SetCursorPos(new Vector2(windowWidth - 60, 40));
+            ImGui.SetCursorPos(new Vector2(windowWidth - 80, 40));
 
             // NOTE: This will return true if the button was clicked ...
             if (ImGui.Button("Ask"))

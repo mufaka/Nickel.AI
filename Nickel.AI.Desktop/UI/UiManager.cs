@@ -19,7 +19,7 @@ public static class UiManager
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
         // TODO: Persist theme choice.
-        Themes.SetStyleDefault();
+        Themes.SetStyleMoonlight();
         SetFont();
         SetupClipboard();
 
@@ -34,7 +34,7 @@ public static class UiManager
         rlImGui.ReloadFonts();
     }
 
-    private static void DoMainMenu()
+    private static void DrawMainMenu()
     {
         if (ImGui.BeginMainMenuBar())
         {
@@ -69,24 +69,41 @@ public static class UiManager
                 }
             }
 
-            if (ImGui.BeginMenu("Theme"))
-            {
-                if (ImGui.MenuItem("Default"))
-                    Themes.SetStyleDefault();
-
-                if (ImGui.MenuItem("Blender"))
-                    Themes.SetStyleBlender();
-
-                if (ImGui.MenuItem("Darcula"))
-                    Themes.SetStyleDarcula();
-
-                if (ImGui.MenuItem("Nord"))
-                    Themes.SetStyleNord();
-
-                ImGui.EndMenu();
-            }
+            DrawThemeMenu();
 
             ImGui.EndMainMenuBar();
+        }
+    }
+
+    private static void DrawThemeMenu()
+    {
+        if (ImGui.BeginMenu("Theme"))
+        {
+            if (ImGui.MenuItem("Default"))
+                Themes.SetStyleDefault();
+
+            if (ImGui.MenuItem("Blender"))
+                Themes.SetStyleBlender();
+
+            if (ImGui.MenuItem("Darcula"))
+                Themes.SetStyleDarcula();
+
+            if (ImGui.MenuItem("Dark Ruda"))
+                Themes.SetStyleDarkRuda();
+
+            if (ImGui.MenuItem("Light"))
+                Themes.SetStyleLight();
+
+            if (ImGui.MenuItem("Material Flat"))
+                Themes.SetStyleMaterialFlat();
+
+            if (ImGui.MenuItem("Moonlight"))
+                Themes.SetStyleMoonlight();
+
+            if (ImGui.MenuItem("Nord"))
+                Themes.SetStyleNord();
+
+            ImGui.EndMenu();
         }
     }
 
@@ -106,7 +123,7 @@ public static class UiManager
     public static void Render()
     {
         rlImGui.Begin();
-        DoMainMenu();
+        DrawMainMenu();
 
         ImGui.DockSpaceOverViewport(ImGui.GetID("NickelAI"), ImGui.GetMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
 

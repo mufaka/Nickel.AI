@@ -49,7 +49,7 @@ namespace Nickel.AI.Desktop
 
                 // Render:
                 Raylib.BeginDrawing();
-                Raylib.ClearBackground(new Color(32, 32, 32, 100));
+                Raylib.ClearBackground(Color.DarkGray);
 
                 UI.UiManager.Render();
 

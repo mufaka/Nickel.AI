@@ -1,2 +1,3 @@
 # Desktop for Visualizing
-![image](https://github.com/mufaka/Nickel.AI/assets/8632538/cb9a7659-5ace-4e9c-8269-3d97c0553860)
+![image](https://github.com/mufaka/Nickel.AI/assets/8632538/975dc321-22db-49a3-98f0-0d58b48b48d5)
+

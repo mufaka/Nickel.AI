@@ -57,7 +57,7 @@ namespace Nickel.AI.Desktop.UI
 
             foreach (var circle in _circles)
             {
-                Raylib.DrawCircle(circle.X, circle.Y, circle.Size, circle.Color);
+                Raylib.DrawCircleGradient(circle.X, circle.Y, circle.Size, circle.Color, circle.InnerColor);
             }
         }
 
@@ -65,6 +65,7 @@ namespace Nickel.AI.Desktop.UI
         {
             public int X, Y;
             public Color Color;
+            public Color InnerColor;
             public int Size;
             public bool Alive = true;
 
@@ -93,7 +94,6 @@ namespace Nickel.AI.Desktop.UI
                 if (growthCheck == 800)
                 {
                     Size = Size - 1;
-                    Color = new Color(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), 255);
 
                     if (Size < 2)
                     {
@@ -139,8 +139,17 @@ namespace Nickel.AI.Desktop.UI
         private List<Circle> GenerateCircles()
         {
             var circles = new List<Circle>();
-            var circleCount = _random.Next(200, 1001);
 
+            float minCount = 100.0f;
+            float maxCount = 5000.0f;
+            float biggestSize = 20.0f;
+            float smallestSize = 4.0f;
+
+            var circleCount = _random.Next((int)minCount, (int)maxCount + 1);
+
+            // scale max size based on amount of circles. less circles means bigger size
+            float factor = ((float)circleCount - minCount) / (maxCount - minCount);
+            float maxSize = biggestSize - ((biggestSize - smallestSize) * factor);
 
             for (int i = 0; i < circleCount; i++)
             {
@@ -148,8 +157,10 @@ namespace Nickel.AI.Desktop.UI
 
                 circle.X = _random.Next(0, _width);
                 circle.Y = _random.Next(0, _height);
-                circle.Size = _random.Next(4, 12);
-                circle.Color = new Color(_random.Next(0, 255), _random.Next(0, 255), _random.Next(0, 255), 255);
+                circle.Size = _random.Next((int)smallestSize, (int)maxSize + 1);
+
+                circle.Color = new Color(_random.Next(0, 256), _random.Next(0, 256), _random.Next(0, 256), 255);
+                circle.InnerColor = new Color(_random.Next(0, 256), _random.Next(0, 256), _random.Next(0, 256), 255);
 
                 circles.Add(circle);
             }

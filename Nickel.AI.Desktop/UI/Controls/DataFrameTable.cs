@@ -74,6 +74,23 @@ namespace Nickel.AI.Desktop.UI.Controls
 
                     ImGui.TableHeadersRow();
 
+                    // TODO: Need clipper here for larger lists as the performance tanks quickly
+                    //       because of the drawing that needs to be done. ImGui.NET doesn't seem
+                    //       to implement ImGuiListClipper fully or I am not understanding how 
+                    //       to use it. The below comment is an excerpt from the ImGui samples.
+                    /*
+                        // Demonstrate using clipper for large vertical lists
+                        ImGuiListClipper clipper;
+                        clipper.Begin(items.Size);
+
+                        while (clipper.Step())
+                        {
+                            for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
+                    */
+
+                    // NOTE: ImGuiListClipper seems a little hacky for vertical scrolling. Just implement paging?
+
+                    int rowCounter = 0;
                     foreach (DataFrameRow row in _dataFrame.Rows)
                     {
                         ImGui.TableNextRow();
@@ -94,6 +111,9 @@ namespace Nickel.AI.Desktop.UI.Controls
                             columnIdx++;
 
                         }
+
+                        rowCounter++;
+                        if (rowCounter > 100) break;
                     }
                     ImGui.EndTable();
                 }

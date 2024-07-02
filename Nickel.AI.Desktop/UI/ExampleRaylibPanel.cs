@@ -46,7 +46,7 @@ namespace Nickel.AI.Desktop.UI
             {
                 foreach (var circle in _circles)
                 {
-                    MoveCircle(circle);
+                    circle.Move(_random);
 
                     if (circle.X < 0) circle.X = 0;
                     if (circle.X > _width) circle.X = _width;
@@ -57,74 +57,99 @@ namespace Nickel.AI.Desktop.UI
 
             foreach (var circle in _circles)
             {
-                Raylib.DrawCircle(circle.X, circle.Y, circle.Size, new Color(circle.R, circle.G, circle.B, 255));
-            }
-        }
-
-        private void MoveCircle(Circle circle)
-        {
-            var movement = _random.Next(0, 9);
-
-            /*
-                0 1 2
-                3 4 5
-                6 7 8
-            */
-            switch (movement)
-            {
-                case 0:
-                    circle.X -= 1;
-                    circle.Y -= 1;
-                    break;
-                case 1:
-                    circle.Y -= 1;
-                    break;
-                case 2:
-                    circle.X += 1;
-                    circle.Y -= 1;
-                    break;
-                case 3:
-                    circle.X -= 1;
-                    break;
-                case 5:
-                    circle.X += 1;
-                    break;
-                case 6:
-                    circle.X -= 1;
-                    circle.Y += 1;
-                    break;
-                case 7:
-                    circle.Y += 1;
-                    break;
-                case 8:
-                    circle.X += 1;
-                    circle.Y += 1;
-                    break;
+                Raylib.DrawCircle(circle.X, circle.Y, circle.Size, circle.Color);
             }
         }
 
         private class Circle
         {
             public int X, Y;
-            public int R, G, B;
+            public Color Color;
             public int Size;
+            public bool Alive = true;
+
+            private int _movementCount = 0;
+            private int _lastMovement = 4; // no where
+
+            public void Move(Random random)
+            {
+                if (!Alive) return;
+
+                // randomize the amount of moves in the same direction
+                var directionCount = random.Next(1, 100);
+
+                if (_movementCount < directionCount)
+                {
+                    _movementCount++;
+                }
+                else
+                {
+                    _movementCount = 0;
+                    _lastMovement = random.Next(0, 9);
+                }
+
+                var growthCheck = random.Next(1, 1000);
+
+                if (growthCheck == 800)
+                {
+                    Size = Size - 1;
+                    Color = new Color(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), 255);
+
+                    if (Size < 2)
+                    {
+                        Alive = false;
+                    }
+                }
+
+                switch (_lastMovement)
+                {
+                    case 0:
+                        X -= 1;
+                        Y -= 1;
+                        break;
+                    case 1:
+                        Y -= 1;
+                        break;
+                    case 2:
+                        X += 1;
+                        Y -= 1;
+                        break;
+                    case 3:
+                        X -= 1;
+                        break;
+                    case 5:
+                        X += 1;
+                        break;
+                    case 6:
+                        X -= 1;
+                        Y += 1;
+                        break;
+                    case 7:
+                        Y += 1;
+                        break;
+                    case 8:
+                        X += 1;
+                        Y += 1;
+                        break;
+                }
+
+            }
         }
 
         private List<Circle> GenerateCircles()
         {
             var circles = new List<Circle>();
+            var circleCount = _random.Next(200, 1001);
 
-            for (int i = 0; i < 1000; i++)
+
+            for (int i = 0; i < circleCount; i++)
             {
                 var circle = new Circle();
 
                 circle.X = _random.Next(0, _width);
                 circle.Y = _random.Next(0, _height);
-                circle.Size = _random.Next(2, 10);
-
-                circle.R = _random.Next(0, 255);
-                circle.G = _random.Next(0, 255);
-                circle.B = _random.Next(0, 255);
+                circle.Size = _random.Next(4, 12);
+                circle.Color = new Color(_random.Next(0, 255), _random.Next(0, 255), _random.Next(0, 255), 255);
 
                 circles.Add(circle);
             }

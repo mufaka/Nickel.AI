@@ -9,13 +9,13 @@ namespace Nickel.AI.Desktop
         {
             Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint |
                                   ConfigFlags.VSyncHint |
-                                  ConfigFlags.ResizableWindow |
-                                  ConfigFlags.MaximizedWindow);
+                                  ConfigFlags.ResizableWindow);
+
             Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
             Raylib.InitWindow(width, height, title);
             Raylib.SetWindowMinSize(1024, 800);
 
-            Raylib.MaximizeWindow();
+            //Raylib.MaximizeWindow();
         }
 
         static void Main(string[] args)

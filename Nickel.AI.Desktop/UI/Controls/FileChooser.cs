@@ -44,6 +44,7 @@ namespace Nickel.AI.Desktop.UI.Controls
             // TODO: Figure out if the return bool means open
             if (ImGui.TreeNodeEx(directory.Name))
             {
+                ImGui.Indent();
                 // are there more directories?
                 var directories = directory.GetDirectories();
 
@@ -53,6 +54,7 @@ namespace Nickel.AI.Desktop.UI.Controls
                 }
 
                 ImGui.TreePop();
+                ImGui.Unindent();
             }
         }
     }

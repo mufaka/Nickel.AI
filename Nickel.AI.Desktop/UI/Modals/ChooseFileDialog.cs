@@ -10,8 +10,6 @@ namespace Nickel.AI.Desktop.UI.Modals
 
         public string SelectedPath { get; set; } = String.Empty;
 
-        // TODO: Expose selected path as property
-
         public void ShowDialogButton(string buttonText, string dialogLabel)
         {
             if (ImGui.Button(buttonText))
@@ -25,14 +23,13 @@ namespace Nickel.AI.Desktop.UI.Modals
 
             if (ImGui.BeginPopupModal(dialogLabel))
             {
-                //ImGui.BeginGroup();
                 _fileChooser.Render();
 
                 if (_fileChooser.SelectedFile != null)
                 {
                     if (ImGui.Button("File"))
                     {
-                        // TODO: set selected file
+                        SelectedPath = _fileChooser.SelectedFile.FullName;
                         ImGui.CloseCurrentPopup();
                     }
                     ImGui.SameLine();
@@ -42,7 +39,7 @@ namespace Nickel.AI.Desktop.UI.Modals
                 {
                     if (ImGui.Button("Directory"))
                     {
-                        // TODO: set selected directory
+                        SelectedPath = _fileChooser.SelectedDirectory.FullName;
                         ImGui.CloseCurrentPopup();
                     }
                     ImGui.SameLine();
@@ -52,7 +49,7 @@ namespace Nickel.AI.Desktop.UI.Modals
                 {
                     ImGui.CloseCurrentPopup();
                 }
-                //ImGui.EndGroup();
+
                 ImGui.EndPopup();
             }
         }

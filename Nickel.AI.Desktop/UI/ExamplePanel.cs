@@ -1,3 +1,4 @@
+using ImGuiNET;
 using Microsoft.Data.Analysis;
 using Nickel.AI.Desktop.UI.Controls;
 using Nickel.AI.Desktop.UI.Modals;
@@ -29,12 +30,11 @@ public class ExamplePanel : Panel
     {
         ChooseFileDialog.ShowDialogButton("Choose...", "Choose File or Directory");
 
-        /*
         if (ChooseFileDialog.SelectedPath != String.Empty)
         {
             ImGui.Text(ChooseFileDialog.SelectedPath);
         }
-        */
+
         //DataFrameTable.Render();
     }
 

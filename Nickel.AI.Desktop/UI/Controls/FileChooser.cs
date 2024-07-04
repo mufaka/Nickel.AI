@@ -15,6 +15,9 @@ namespace Nickel.AI.Desktop.UI.Controls
             _drives = DriveInfo.GetDrives();
         }
 
+        public DirectoryInfo? SelectedDirectory { get { return _selectedDirectory; } }
+        public FileInfo? SelectedFile { get { return _selectedFile; } }
+
         public override void Render()
         {
             foreach (DriveInfo drive in _drives)
@@ -23,6 +26,7 @@ namespace Nickel.AI.Desktop.UI.Controls
                 {
                     _selectedDrive = drive;
                     _selectedDirectory = null;
+                    _selectedFile = null;
                 }
                 ImGui.SameLine();
             }
@@ -31,7 +35,8 @@ namespace Nickel.AI.Desktop.UI.Controls
             {
                 ImGui.PushFont(UiManager.FONT_JETBRAINS_MONO_MEDIUM_16);
                 ImGui.NewLine();
-                ImGui.BeginChild("fc left", new Vector2(300, 0), ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX | ImGuiChildFlags.AlwaysUseWindowPadding);
+
+                ImGui.BeginChild("fc left", new Vector2(300, -ImGui.GetFrameHeightWithSpacing()), ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX | ImGuiChildFlags.AlwaysUseWindowPadding);
                 ImGui.Unindent();
                 RenderDirectoryTree(_selectedDrive.RootDirectory);
                 ImGui.EndChild();
@@ -41,7 +46,10 @@ namespace Nickel.AI.Desktop.UI.Controls
                     ImGui.SameLine();
                     ImGui.BeginGroup();
                     ImGui.BeginChild("fc right", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()));
-                    ImGui.SeparatorText(_selectedDirectory.FullName);
+
+                    var separatorText = _selectedFile == null ? _selectedDirectory.FullName : _selectedFile.FullName;
+
+                    ImGui.SeparatorText(separatorText);
 
                     var files = _selectedDirectory.GetFiles();
 
@@ -58,7 +66,13 @@ namespace Nickel.AI.Desktop.UI.Controls
                                 ImGui.TableNextRow();
 
                                 ImGui.TableSetColumnIndex(0);
-                                ImGui.Text(file.Name);
+                                ImGui.Selectable(file.Name);
+                                if (ImGui.IsItemClicked())
+                                {
+                                    _selectedFile = file;
+                                }
+
+                                //ImGui.Text(file.Name);
 
                                 ImGui.TableSetColumnIndex(1);
                                 ImGui.Text(SizeSuffix(file.Length));
@@ -87,6 +101,7 @@ namespace Nickel.AI.Desktop.UI.Controls
                 if (nodeClicked)
                 {
                     _selectedDirectory = directory;
+                    _selectedFile = null;
                 }
 
                 if (nodeOpen)

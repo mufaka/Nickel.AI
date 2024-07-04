@@ -1,11 +1,13 @@
 using Microsoft.Data.Analysis;
 using Nickel.AI.Desktop.UI.Controls;
+using Nickel.AI.Desktop.UI.Modals;
 
 namespace Nickel.AI.Desktop.UI;
 
 public class ExamplePanel : Panel
 {
     private DataFrameTable DataFrameTable { get; set; }
+    private ChooseFileDialog ChooseFileDialog { get; set; }
     private FileChooser _fileChooser;
 
     public ExamplePanel(string menu = "Examples", string label = "Label")
@@ -16,6 +18,7 @@ public class ExamplePanel : Panel
         Label = label;
 
         _fileChooser = new FileChooser();
+        ChooseFileDialog = new ChooseFileDialog();
         DataFrameTable = new DataFrameTable();
         DataFrameTable.Frame = DataFrame.LoadCsv(@"D:\DataSets\Spotify\Most Streamed Spotify Songs 2024.csv");
     }
@@ -24,11 +27,14 @@ public class ExamplePanel : Panel
 
     public override void DoRender()
     {
-        if (_fileChooser != null)
-        {
-            _fileChooser.Render();
-        }
+        ChooseFileDialog.ShowDialogButton("Choose...", "Choose File or Directory");
 
+        /*
+        if (ChooseFileDialog.SelectedPath != String.Empty)
+        {
+            ImGui.Text(ChooseFileDialog.SelectedPath);
+        }
+        */
         //DataFrameTable.Render();
     }
 

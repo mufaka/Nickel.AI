@@ -21,12 +21,15 @@ public static class UiManager
         SetFont();
     }
 
+    public static ImFontPtr FONT_JETBRAINS_MONO_MEDIUM_20;
+    public static ImFontPtr FONT_JETBRAINS_MONO_MEDIUM_16;
+
     private static void SetFont()
     {
         var io = ImGui.GetIO();
         io.Fonts.Clear();
-        io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"), 22);
-        //io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "IckyticketMono-nKpJ.ttf"), 24);
+        FONT_JETBRAINS_MONO_MEDIUM_20 = io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"), 20);
+        FONT_JETBRAINS_MONO_MEDIUM_16 = io.Fonts.AddFontFromFileTTF(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"), 16);
         rlImGui.ReloadFonts();
     }
 

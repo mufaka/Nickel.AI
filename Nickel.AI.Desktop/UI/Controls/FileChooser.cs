@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI.Controls
 {
@@ -21,40 +22,79 @@ namespace Nickel.AI.Desktop.UI.Controls
                 if (ImGui.Button(drive.Name))
                 {
                     _selectedDrive = drive;
+                    _selectedDirectory = null;
                 }
                 ImGui.SameLine();
             }
 
             if (_selectedDrive != null)
             {
-                var directories = _selectedDrive.RootDirectory.GetDirectories();
-
+                ImGui.PushFont(UiManager.FONT_JETBRAINS_MONO_MEDIUM_16);
                 ImGui.NewLine();
+                ImGui.BeginChild("fc left", new Vector2(300, 0), ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX | ImGuiChildFlags.AlwaysUseWindowPadding);
+                ImGui.Unindent();
                 RenderDirectoryTree(_selectedDrive.RootDirectory);
-            }
+                ImGui.EndChild();
 
-            if (_selectedDirectory != null)
-            {
+                if (_selectedDirectory != null)
+                {
+                    ImGui.SameLine();
+                    ImGui.BeginGroup();
+                    ImGui.BeginChild("fc right", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()));
+                    ImGui.SeparatorText(_selectedDirectory.FullName);
 
+                    /*
+                    var files = _selectedDirectory.GetFiles();
+
+                    if (files.Length > 0)
+                    {
+                        // NOTE: Should probably enforce a max on files
+                        foreach (var file in files)
+                        {
+                            if (ImGui.TreeNodeEx(file.Name))
+                            {
+                                // what to do here?
+                                ImGui.TreePop();
+                            }
+                        }
+                    }
+                    */
+
+                    ImGui.EndChild();
+                    ImGui.EndGroup();
+                }
+                ImGui.PopFont();
             }
         }
 
         private void RenderDirectoryTree(DirectoryInfo directory)
         {
-            // TODO: Figure out if the return bool means open
-            if (ImGui.TreeNodeEx(directory.Name))
+            try
             {
-                ImGui.Indent();
-                // are there more directories?
                 var directories = directory.GetDirectories();
 
-                foreach (var childDirectory in directories)
+                bool nodeOpen = ImGui.TreeNodeEx(directory.Name);
+                bool nodeClicked = ImGui.IsItemClicked();
+
+                if (nodeClicked)
                 {
-                    RenderDirectoryTree(childDirectory);
+                    _selectedDirectory = directory;
                 }
 
-                ImGui.TreePop();
-                ImGui.Unindent();
+                if (nodeOpen)
+                {
+                    foreach (var childDirectory in directories)
+                    {
+                        RenderDirectoryTree(childDirectory);
+                    }
+
+                    ImGui.TreePop();
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: Handle access exceptions? There doesn't seem to be a good way to check permissions
+                //       across platforms ... at least that I can test. 
             }
         }
     }

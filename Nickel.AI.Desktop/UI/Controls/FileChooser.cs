@@ -43,22 +43,30 @@ namespace Nickel.AI.Desktop.UI.Controls
                     ImGui.BeginChild("fc right", new Vector2(0, -ImGui.GetFrameHeightWithSpacing()));
                     ImGui.SeparatorText(_selectedDirectory.FullName);
 
-                    /*
                     var files = _selectedDirectory.GetFiles();
 
                     if (files.Length > 0)
                     {
-                        // NOTE: Should probably enforce a max on files
-                        foreach (var file in files)
+                        if (ImGui.BeginTable("files", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg))
                         {
-                            if (ImGui.TreeNodeEx(file.Name))
+                            ImGui.TableSetupColumn("File Name");
+                            ImGui.TableSetupColumn("Size");
+                            ImGui.TableHeadersRow();
+
+                            foreach (var file in files)
                             {
-                                // what to do here?
-                                ImGui.TreePop();
+                                ImGui.TableNextRow();
+
+                                ImGui.TableSetColumnIndex(0);
+                                ImGui.Text(file.Name);
+
+                                ImGui.TableSetColumnIndex(1);
+                                ImGui.Text(SizeSuffix(file.Length));
                             }
+
+                            ImGui.EndTable();
                         }
                     }
-                    */
 
                     ImGui.EndChild();
                     ImGui.EndGroup();
@@ -96,6 +104,25 @@ namespace Nickel.AI.Desktop.UI.Controls
                 // TODO: Handle access exceptions? There doesn't seem to be a good way to check permissions
                 //       across platforms ... at least that I can test. 
             }
+        }
+
+        // size formatting copied from https://stackoverflow.com/questions/14488796/does-net-provide-an-easy-way-convert-bytes-to-kb-mb-gb-etc
+        static readonly string[] SizeSuffixes =
+                          { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+        static string SizeSuffix(Int64 value, int decimalPlaces = 1)
+        {
+            if (value < 0) { return "-" + SizeSuffix(-value, decimalPlaces); }
+
+            int i = 0;
+            decimal dValue = (decimal)value;
+            while (Math.Round(dValue, decimalPlaces) >= 1000)
+            {
+                dValue /= 1024;
+                i++;
+            }
+
+            return string.Format("{0:n" + decimalPlaces + "} {1}", dValue, SizeSuffixes[i]);
         }
     }
 }

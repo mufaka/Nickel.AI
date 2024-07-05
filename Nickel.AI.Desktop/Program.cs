@@ -40,6 +40,14 @@ namespace Nickel.AI.Desktop
 
             UI.UiManager.Panels.Add(raylibPanel);
 
+            var textExtractionPanel = new TextExtractionPanel();
+            textExtractionPanel.Label = "Text Extraction";
+            textExtractionPanel.MenuCategory = "Text";
+            textExtractionPanel.DefaultWindowSize.X = 800;
+            textExtractionPanel.DefaultWindowSize.Y = 600;
+
+            UI.UiManager.Panels.Add(textExtractionPanel);
+
             UI.UiManager.Setup();
 
             while (!Raylib.WindowShouldClose() && !UI.UiManager.Quit)

@@ -1,4 +1,5 @@
-﻿using Raylib_cs;
+﻿using ImGuiNET;
+using Raylib_cs;
 using rlImGui_cs;
 
 namespace Nickel.AI.Desktop.UI
@@ -6,18 +7,32 @@ namespace Nickel.AI.Desktop.UI
     public abstract class PanelRaylib : Panel
     {
         public RenderTexture2D ViewTexture;
+        private int _width;
+        private int _height;
 
         public PanelRaylib()
         {
-            // TODO: Get height of menu bar to subtract from texture height
-            //ViewTexture = Raylib.LoadRenderTexture((int)DefaultWindowSize.X, (int)DefaultWindowSize.Y - 50);
-            ViewTexture = Raylib.LoadRenderTexture(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+            _width = Raylib.GetScreenWidth();
+            _height = Raylib.GetScreenHeight();
+
+            ViewTexture = Raylib.LoadRenderTexture(_width, _height);
             Raylib.SetTextureWrap(ViewTexture.Texture, TextureWrap.Repeat);
             Raylib.SetTextureFilter(ViewTexture.Texture, TextureFilter.Point);
         }
 
         public override void DoRender()
         {
+            // NOTE: Reloading a new ViewTexture isn't an option for performance reasons so we need to 
+            //       somehow know when the screen was resized.
+            var availableSize = ImGui.GetContentRegionAvail();
+
+            if ((int)availableSize.X != _width || (int)availableSize.Y != _height)
+            {
+                _width = (int)availableSize.X;
+                _height = (int)availableSize.Y;
+                ViewTexture = Raylib.LoadRenderTexture(_width, _height);
+            }
+
             Raylib.BeginTextureMode(ViewTexture);
             Raylib.ClearBackground(Color.Blank);
 

@@ -35,8 +35,8 @@ namespace Nickel.AI.Desktop
             var raylibPanel = new ExampleRaylibPanel();
             raylibPanel.Label = "Raylib drawn inside ImGUI";
             raylibPanel.MenuCategory = "Examples";
-            raylibPanel.DefaultWindowSize.X = 600;
-            raylibPanel.DefaultWindowSize.Y = 400;
+            raylibPanel.DefaultWindowSize.X = 800;
+            raylibPanel.DefaultWindowSize.Y = 600;
 
             UI.UiManager.Panels.Add(raylibPanel);
 

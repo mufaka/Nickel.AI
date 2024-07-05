@@ -5,15 +5,13 @@ namespace Nickel.AI.Desktop.UI
 {
     public class ExampleRaylibPanel : PanelRaylib
     {
-        private int _width;
-        private int _height;
         private Random _random = new Random(Guid.NewGuid().GetHashCode());
         private List<Circle> _circles = new List<Circle>();
 
         public override void RenderRaylib()
         {
-            _width = (int)ImGui.GetWindowWidth();
-            _height = (int)ImGui.GetWindowHeight();
+            //Width = (int)ImGui.GetWindowWidth();
+            //Height = (int)ImGui.GetWindowHeight();
 
             if (_circles.Count == 0)
             {
@@ -32,14 +30,16 @@ namespace Nickel.AI.Desktop.UI
         {
             const int cellSize = 20;
 
-            for (int i = cellSize; i < _height; i += cellSize)
+            //for (int i = cellSize; i < _height; i += cellSize)
+            for (int i = 0; i < Height; i += cellSize)
             {
-                Raylib.DrawLine(0, i, _width, i, Color.DarkGray);
+                Raylib.DrawLine(0, i, Width, i, Color.DarkGray);
             }
 
-            for (int i = cellSize; i < _width; i += cellSize)
+            //for (int i = cellSize; i < _width; i += cellSize)
+            for (int i = 0; i < Width; i += cellSize)
             {
-                Raylib.DrawLine(i, 0, i, _height, Color.DarkGray);
+                Raylib.DrawLine(i, 0, i, Height, Color.DarkGray);
             }
 
             //if (ImGui.GetFrameCount() % 5 == 0)
@@ -49,9 +49,9 @@ namespace Nickel.AI.Desktop.UI
                     circle.Move(_random);
 
                     if (circle.X < 0) circle.X = 0;
-                    if (circle.X > _width) circle.X = _width;
+                    if (circle.X > Width) circle.X = Width;
                     if (circle.Y < 0) circle.Y = 0;
-                    if (circle.Y > _height) circle.Y = _height;
+                    if (circle.Y > Height) circle.Y = Height;
                 }
             }
 
@@ -155,8 +155,8 @@ namespace Nickel.AI.Desktop.UI
             {
                 var circle = new Circle();
 
-                circle.X = _random.Next(0, _width);
-                circle.Y = _random.Next(0, _height);
+                circle.X = _random.Next(0, Width);
+                circle.Y = _random.Next(0, Height);
                 circle.Size = _random.Next((int)smallestSize, (int)maxSize + 1);
 
                 circle.Color = new Color(_random.Next(0, 256), _random.Next(0, 256), _random.Next(0, 256), 255);

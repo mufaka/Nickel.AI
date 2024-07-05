@@ -7,15 +7,15 @@ namespace Nickel.AI.Desktop.UI
     public abstract class PanelRaylib : Panel
     {
         public RenderTexture2D ViewTexture;
-        private int _width;
-        private int _height;
+        public int Width;
+        public int Height;
 
         public PanelRaylib()
         {
-            _width = Raylib.GetScreenWidth();
-            _height = Raylib.GetScreenHeight();
+            Width = Raylib.GetScreenWidth();
+            Height = Raylib.GetScreenHeight();
 
-            ViewTexture = Raylib.LoadRenderTexture(_width, _height);
+            ViewTexture = Raylib.LoadRenderTexture(Width, Height);
             Raylib.SetTextureWrap(ViewTexture.Texture, TextureWrap.Repeat);
             Raylib.SetTextureFilter(ViewTexture.Texture, TextureFilter.Point);
         }
@@ -26,11 +26,11 @@ namespace Nickel.AI.Desktop.UI
             //       somehow know when the screen was resized.
             var availableSize = ImGui.GetContentRegionAvail();
 
-            if ((int)availableSize.X != _width || (int)availableSize.Y != _height)
+            if ((int)availableSize.X != Width || (int)availableSize.Y != Height)
             {
-                _width = (int)availableSize.X;
-                _height = (int)availableSize.Y;
-                ViewTexture = Raylib.LoadRenderTexture(_width, _height);
+                Width = (int)availableSize.X;
+                Height = (int)availableSize.Y;
+                ViewTexture = Raylib.LoadRenderTexture(Width, Height);
             }
 
             Raylib.BeginTextureMode(ViewTexture);

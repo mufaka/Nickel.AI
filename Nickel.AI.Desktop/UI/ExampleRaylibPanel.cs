@@ -31,13 +31,13 @@ namespace Nickel.AI.Desktop.UI
             const int cellSize = 20;
 
             //for (int i = cellSize; i < _height; i += cellSize)
-            for (int i = 0; i < Height; i += cellSize)
+            for (int i = 1; i < Height; i += cellSize)
             {
                 Raylib.DrawLine(0, i, Width, i, Color.DarkGray);
             }
 
             //for (int i = cellSize; i < _width; i += cellSize)
-            for (int i = 0; i < Width; i += cellSize)
+            for (int i = 1; i < Width; i += cellSize)
             {
                 Raylib.DrawLine(i, 0, i, Height, Color.DarkGray);
             }

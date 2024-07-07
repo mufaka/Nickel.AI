@@ -1,10 +1,14 @@
 ﻿using ImGuiNET;
 using Microsoft.Data.Analysis;
+using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI.Controls
 {
     public class DataFrameTable : ImGuiControl
     {
+        public int PageSize { get; set; } = 100;
+        public int PageNumber { get; set; } = 1;
+
         private DataFrame? _dataFrame = null;
         private Dictionary<string, ColumnState> _columnState = new Dictionary<string, ColumnState>();
 
@@ -55,6 +59,8 @@ namespace Nickel.AI.Desktop.UI.Controls
                     ImGui.EndTable();
                 }
 
+                DrawPager();
+
                 // data
                 if (ImGui.BeginTable("frameTable", _dataFrame.Columns.Count, ImGuiTableFlags.Resizable | ImGuiTableFlags.Borders | ImGuiTableFlags.ScrollX | ImGuiTableFlags.ScrollY))
                 {
@@ -74,24 +80,9 @@ namespace Nickel.AI.Desktop.UI.Controls
 
                     ImGui.TableHeadersRow();
 
-                    // TODO: Need clipper here for larger lists as the performance tanks quickly
-                    //       because of the drawing that needs to be done. ImGui.NET doesn't seem
-                    //       to implement ImGuiListClipper fully or I am not understanding how 
-                    //       to use it. The below comment is an excerpt from the ImGui samples.
-                    /*
-                        // Demonstrate using clipper for large vertical lists
-                        ImGuiListClipper clipper;
-                        clipper.Begin(items.Size);
+                    var rows = _dataFrame.Rows.Skip((PageNumber - 1) * PageSize).Take(PageSize);
 
-                        while (clipper.Step())
-                        {
-                            for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
-                    */
-
-                    // NOTE: ImGuiListClipper seems a little hacky for vertical scrolling. Just implement paging?
-
-                    int rowCounter = 0;
-                    foreach (DataFrameRow row in _dataFrame.Rows)
+                    foreach (DataFrameRow row in rows)
                     {
                         ImGui.TableNextRow();
 
@@ -109,14 +100,69 @@ namespace Nickel.AI.Desktop.UI.Controls
                                 displayColumnIdx++;
                             }
                             columnIdx++;
-
                         }
-
-                        rowCounter++;
-                        if (rowCounter > 100) break;
                     }
                     ImGui.EndTable();
                 }
+            }
+        }
+
+        private void DrawPager()
+        {
+            var pages = (_dataFrame!.Rows.Count + PageSize - 1) / PageSize;
+
+            if (PageNumber > 1)
+            {
+                if (ImGui.Button("<<"))
+                {
+                    PageNumber = 1;
+                }
+                ImGui.SameLine();
+                if (ImGui.Button("<"))
+                {
+                    PageNumber -= 1;
+                }
+                ImGui.SameLine();
+            }
+
+            var firstPager = Math.Max(1, PageNumber - 3);
+            var lastPager = Math.Min(firstPager + 5, pages);
+
+            for (int x = firstPager; x <= lastPager; x++)
+            {
+                if (x == PageNumber)
+                {
+                    Vector4 color = ImGui.GetStyle().Colors[(int)ImGuiCol.NavWindowingHighlight];
+                    ImGui.PushStyleColor(ImGuiCol.Button, color);
+                    ImGui.Button($"{x}");
+                    ImGui.PopStyleColor();
+                }
+                else
+                {
+                    if (ImGui.Button($"{x}"))
+                    {
+                        PageNumber = x;
+                    }
+                }
+                ImGui.SameLine();
+            }
+
+            if (PageNumber < pages)
+            {
+                if (ImGui.Button(">"))
+                {
+                    PageNumber += 1;
+                }
+                ImGui.SameLine();
+
+                if (ImGui.Button(">>"))
+                {
+                    PageNumber = (int)pages;
+                }
+            }
+            else
+            {
+                ImGui.NewLine();
             }
         }
     }

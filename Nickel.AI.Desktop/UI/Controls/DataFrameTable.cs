@@ -59,6 +59,7 @@ namespace Nickel.AI.Desktop.UI.Controls
                     ImGui.EndTable();
                 }
 
+                ImGui.Separator();
                 DrawPager();
 
                 // data
@@ -132,7 +133,7 @@ namespace Nickel.AI.Desktop.UI.Controls
             {
                 if (x == PageNumber)
                 {
-                    Vector4 color = ImGui.GetStyle().Colors[(int)ImGuiCol.NavWindowingHighlight];
+                    Vector4 color = ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonActive];
                     ImGui.PushStyleColor(ImGuiCol.Button, color);
                     ImGui.Button($"{x}");
                     ImGui.PopStyleColor();

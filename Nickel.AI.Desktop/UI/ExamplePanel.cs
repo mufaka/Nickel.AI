@@ -8,6 +8,8 @@ public class ExamplePanel : Panel
 {
     private DataFrameTable DataFrameTable { get; set; }
     private ChooseFileDialog ChooseFileDialog { get; set; }
+    private DataProjectDialog DataProjectDialog { get; set; }
+
     private FileChooser _fileChooser;
 
     public ExamplePanel(string menu = "Examples", string label = "Label")
@@ -19,6 +21,7 @@ public class ExamplePanel : Panel
 
         _fileChooser = new FileChooser();
         ChooseFileDialog = new ChooseFileDialog();
+        DataProjectDialog = new DataProjectDialog();
         DataFrameTable = new DataFrameTable();
         DataFrameTable.Frame = DataFrame.LoadCsv(@"D:\DataSets\Spotify\Most Streamed Spotify Songs 2024.csv");
     }
@@ -27,7 +30,8 @@ public class ExamplePanel : Panel
 
     public override void DoRender()
     {
-        DataFrameTable.Render();
+        //DataFrameTable.Render();
+        DataProjectDialog.ShowDialogButton("Create", "Create Data Project");
     }
 
     public override void Update()

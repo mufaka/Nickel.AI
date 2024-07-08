@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI.Modals
 {
-    public class ChooseFileDialog
+    public class ChooseFileDialog : IModalDialog
     {
         private FileChooser _fileChooser = new FileChooser();
 

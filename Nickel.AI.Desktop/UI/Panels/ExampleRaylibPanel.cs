@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Raylib_cs;
 
-namespace Nickel.AI.Desktop.UI
+namespace Nickel.AI.Desktop.UI.Panels
 {
     public class ExampleRaylibPanel : PanelRaylib
     {
@@ -148,8 +148,8 @@ namespace Nickel.AI.Desktop.UI
             var circleCount = _random.Next((int)minCount, (int)maxCount + 1);
 
             // scale max size based on amount of circles. less circles means bigger size
-            float factor = ((float)circleCount - minCount) / (maxCount - minCount);
-            float maxSize = biggestSize - ((biggestSize - smallestSize) * factor);
+            float factor = (circleCount - minCount) / (maxCount - minCount);
+            float maxSize = biggestSize - (biggestSize - smallestSize) * factor;
 
             for (int i = 0; i < circleCount; i++)
             {

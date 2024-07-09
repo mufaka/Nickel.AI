@@ -5,12 +5,12 @@ using Nickel.AI.Desktop.Utilities;
 using Nickel.AI.Extraction;
 using Nickel.AI.Tokenization;
 
-namespace Nickel.AI.Desktop.UI
+namespace Nickel.AI.Desktop.UI.Panels
 {
     public class TextExtractionPanel : Panel
     {
         private ChooseFileDialog _fileDialog = new ChooseFileDialog();
-        private string _selectedPath = String.Empty;
+        private string _selectedPath = string.Empty;
         private ExtractedDocument? _extractedDocument;
 
         public override void DoRender()
@@ -21,13 +21,13 @@ namespace Nickel.AI.Desktop.UI
             ImGui.Text("Path (File or Url)");
             ImGui.SameLine();
 
-            ImGui.InputText("", ref _selectedPath, (uint)256, ImGuiInputTextFlags.EnterReturnsTrue);
+            ImGui.InputText("", ref _selectedPath, 256, ImGuiInputTextFlags.EnterReturnsTrue);
 
 
             ImGui.SameLine();
             _fileDialog.ShowDialogButton("...", "Choose File");
 
-            if (_fileDialog.SelectedPath != String.Empty && File.Exists(_fileDialog.SelectedPath))
+            if (_fileDialog.SelectedPath != string.Empty && File.Exists(_fileDialog.SelectedPath))
             {
                 _selectedPath = _fileDialog.SelectedPath;
             }
@@ -35,7 +35,7 @@ namespace Nickel.AI.Desktop.UI
             // TODO: Add radios for which Chunker to use (or none).
 
             // TODO: Add "Extract" button.
-            if (!String.IsNullOrWhiteSpace(_selectedPath) && ImGui.Button("Extract"))
+            if (!string.IsNullOrWhiteSpace(_selectedPath) && ImGui.Button("Extract"))
             {
                 _extractedDocument = null;
                 ExtractDocument(_selectedPath);

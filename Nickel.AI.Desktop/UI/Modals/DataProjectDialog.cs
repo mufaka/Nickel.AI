@@ -20,6 +20,23 @@ namespace Nickel.AI.Desktop.UI.Modals
 
         public void ShowDialogButton(string buttonText, string dialogLabel)
         {
+            var buttonClicked = ImGui.Button(buttonText);
+
+            if (buttonClicked)
+            {
+                ImGui.OpenPopup(dialogLabel);
+
+                var center = ImGui.GetMainViewport().GetCenter();
+                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+                ImGui.SetNextWindowSize(new Vector2(800, 400));
+            }
+
+            ShowModal(dialogLabel);
+
+        }
+
+        public void ShowModal(string dialogLabel)
+        {
             if (!String.IsNullOrWhiteSpace(_sourceDialog.SelectedPath))
             {
                 _sourcePath = _sourceDialog.SelectedPath;
@@ -28,15 +45,6 @@ namespace Nickel.AI.Desktop.UI.Modals
             if (!String.IsNullOrWhiteSpace(_destinationDialog.SelectedPath))
             {
                 _destinationPath = _destinationDialog.SelectedPath;
-            }
-
-            if (ImGui.Button(buttonText))
-            {
-                ImGui.OpenPopup(dialogLabel);
-
-                var center = ImGui.GetMainViewport().GetCenter();
-                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                ImGui.SetNextWindowSize(new Vector2(800, 400));
             }
 
             if (ImGui.BeginPopupModal(dialogLabel))

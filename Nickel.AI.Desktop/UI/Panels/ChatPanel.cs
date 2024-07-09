@@ -4,7 +4,7 @@ using OllamaSharp;
 using OllamaSharp.Models;
 using System.Numerics;
 
-namespace Nickel.AI.Desktop.UI
+namespace Nickel.AI.Desktop.UI.Panels
 {
     public class ChatPanel : Panel
     {
@@ -50,7 +50,7 @@ namespace Nickel.AI.Desktop.UI
             }
 
             // TODO: Sizing? Border? Word wrap?
-            if (!String.IsNullOrEmpty(_answer))
+            if (!string.IsNullOrEmpty(_answer))
             {
                 ImGui.SetCursorPos(new Vector2(20, 80));
 

@@ -2,7 +2,7 @@ using Microsoft.Data.Analysis;
 using Nickel.AI.Desktop.UI.Controls;
 using Nickel.AI.Desktop.UI.Modals;
 
-namespace Nickel.AI.Desktop.UI;
+namespace Nickel.AI.Desktop.UI.Panels;
 
 public class ExamplePanel : Panel
 {

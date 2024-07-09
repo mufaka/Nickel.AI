@@ -20,10 +20,15 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         public override void DoRender()
         {
-            // draw menu for window
-            if (ImGui.BeginMenu("Data Projects"))
+            if (ImGui.BeginMenuBar())
             {
-                ImGui.MenuItem("<New>", _showDataProjectModal);
+                // draw menu for window
+                if (ImGui.BeginMenu("Data Projects"))
+                {
+                    _showDataProjectModal = ImGui.MenuItem("<New>");
+                    ImGui.EndMenu();
+                }
+                ImGui.EndMenuBar();
             }
 
             if (_showDataProjectModal)
@@ -34,7 +39,13 @@ namespace Nickel.AI.Desktop.UI.Panels
                 ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
                 ImGui.SetNextWindowSize(new Vector2(800, 400));
             }
+
             _dataProjectDialog.ShowModal("Testing Menu Click Dialog");
+
+            if (_dataProjectDialog.OK || _dataProjectDialog.Cancel)
+            {
+                _showDataProjectModal = false;
+            }
 
             // choose existing project or create new. 
 

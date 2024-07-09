@@ -72,6 +72,7 @@ namespace Nickel.AI.Desktop
             chunkedDataViewer.MenuCategory = "Data";
             chunkedDataViewer.DefaultWindowSize.X = 800;
             chunkedDataViewer.DefaultWindowSize.Y = 600;
+            chunkedDataViewer.HasMenuBar = true;
 
             UI.UiManager.Panels.Add(chunkedDataViewer);
         }

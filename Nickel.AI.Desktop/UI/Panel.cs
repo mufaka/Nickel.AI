@@ -6,6 +6,7 @@ namespace Nickel.AI.Desktop.UI;
 public abstract class Panel
 {
     public bool Open = false;
+    public bool HasMenuBar = false;
     public Vector2 DefaultWindowSize = new Vector2(600, 400);
 
     public string MenuCategory { get; set; } = "Menu";
@@ -30,7 +31,9 @@ public abstract class Panel
         //       ONLY if there is no .ini entry for a panel with this name.
         ImGui.SetNextWindowSize(DefaultWindowSize, ImGuiCond.Once); // Once means once per session (app run), FirstUseEver means respect .ini after first use
 
-        if (ImGui.Begin(Label, ref isOpen))
+        ImGuiWindowFlags flags = HasMenuBar ? ImGuiWindowFlags.MenuBar : ImGuiWindowFlags.None;
+
+        if (ImGui.Begin(Label, ref isOpen, flags))
         {
             DoRender();
             ImGui.End();

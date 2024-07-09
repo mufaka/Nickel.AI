@@ -10,6 +10,7 @@ namespace Nickel.AI.Desktop.UI.Modals
     {
         public DataProject Project { get; set; } = new DataProject();
         public bool OK { get; set; } = false;
+        public bool Cancel { get; set; } = false;
 
         private string _projectName = string.Empty;
         private string _sourcePath = string.Empty;
@@ -37,6 +38,9 @@ namespace Nickel.AI.Desktop.UI.Modals
 
         public void ShowModal(string dialogLabel)
         {
+            OK = false;
+            Cancel = false;
+
             if (!String.IsNullOrWhiteSpace(_sourceDialog.SelectedPath))
             {
                 _sourcePath = _sourceDialog.SelectedPath;
@@ -91,6 +95,7 @@ namespace Nickel.AI.Desktop.UI.Modals
                 if (ImGui.Button("Cancel"))
                 {
                     OK = false;
+                    Cancel = true;
                     ImGui.CloseCurrentPopup();
                 }
             }

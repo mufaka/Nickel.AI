@@ -62,6 +62,8 @@ namespace Nickel.AI.Desktop.UI.Panels
                         {
                             if (ImGui.MenuItem(project.Name))
                             {
+                                _chunkedData = null;
+                                _dataFrameTable.Frame = null;
                                 _dataProject = project;
                             }
                         }

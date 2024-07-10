@@ -19,6 +19,8 @@ namespace Nickel.AI.Desktop.UI.Panels
         private bool _showDataProjectModal = false;
         private bool _creatingProject = false;
 
+        private int _frameNumber = 1;
+
         public ChunkedDataPanel()
         {
             _projects = SettingsManager.DataProjects;
@@ -29,20 +31,87 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             DrawMenu();
 
-            if (_dataProject != null && _chunkedData == null)
+            if (_dataProject != null)
             {
-                InitializeDataProject();
+                DrawProjectDetails();
+
+                if (_chunkedData == null)
+                {
+                    InitializeDataProject();
+                }
             }
 
             if (_chunkedData != null)
             {
-                // need to page the data frames
-                if (_dataFrameTable.Frame == null)
+                if (_chunkedData.Frames.Count > 0)
                 {
-                    _dataFrameTable.Frame = _chunkedData.Frames[0].Data;
+                    _dataFrameTable.Frame = _chunkedData.Frames[_frameNumber - 1].Data;
+
+                    if (ImGui.BeginCombo("Choose Frame", $"Frame {_frameNumber}", ImGuiComboFlags.WidthFitPreview))
+                    {
+                        for (int x = 0; x < _chunkedData.Frames.Count; x++)
+                        {
+                            var isSelected = _frameNumber == x + 1;
+
+                            if (ImGui.Selectable($"Frame {x + 1}", isSelected))
+                            {
+                                _dataFrameTable.PageNumber = 1;
+                                _frameNumber = x + 1;
+                            }
+
+                            if (isSelected)
+                            {
+                                ImGui.SetItemDefaultFocus();
+                            }
+                        }
+
+                        ImGui.EndCombo();
+                    }
+
+                    ImGui.Separator();
+
+                    _dataFrameTable.Render();
                 }
-                _dataFrameTable.Render();
             }
+        }
+
+        private void DrawProjectDetails()
+        {
+            ImGui.SameLine(ImGui.GetContentRegionAvail().X * .5f);
+            ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 5.0f);
+            ImGui.BeginChild("project-detail", new Vector2(ImGui.GetContentRegionAvail().X, 100), ImGuiChildFlags.Border, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.BeginTable("project-table", 2);
+            ImGui.TableSetupColumn("Attribute", ImGuiTableColumnFlags.WidthFixed, 100.0f);
+
+            ImGui.PushFont(UiManager.FONT_JETBRAINS_MONO_MEDIUM_16);
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Project");
+            ImGui.TableNextColumn();
+            ImGui.Text(_dataProject!.Name);
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Source");
+            ImGui.TableNextColumn();
+            ImGui.Text(_dataProject!.SourcePath);
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Storage");
+            ImGui.TableNextColumn();
+            ImGui.Text(_dataProject!.DestinationPath);
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Chunk Size");
+            ImGui.TableNextColumn();
+            ImGui.Text(Convert.ToString(_dataProject!.ChunkSize));
+            ImGui.PopFont();
+
+            ImGui.EndTable();
+            ImGui.EndChild();
+            ImGui.PopStyleVar();
         }
 
         private void DrawMenu()
@@ -62,6 +131,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                         {
                             if (ImGui.MenuItem(project.Name))
                             {
+                                _frameNumber = 1;
                                 _chunkedData = null;
                                 _dataFrameTable.Frame = null;
                                 _dataProject = project;
@@ -73,6 +143,13 @@ namespace Nickel.AI.Desktop.UI.Panels
 
                 if (_showDataProjectModal)
                 {
+                    // NOTE: Clearing these out because the modal appears under a loaded project for some reason
+                    //       and this is the easiest way to handle that.
+                    _frameNumber = 1;
+                    _chunkedData = null;
+                    _dataFrameTable.Frame = null;
+                    _dataProject = null;
+
                     ImGui.OpenPopup("Testing Menu Click Dialog");
 
                     var center = ImGui.GetMainViewport().GetCenter();

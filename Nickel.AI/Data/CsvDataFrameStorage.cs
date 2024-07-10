@@ -23,7 +23,10 @@ namespace Nickel.AI.Data
             var fileName = GetFileName(ordinal);
             using (var stream = File.OpenRead(fileName))
             {
-                return DataFrame.LoadCsv(stream);
+                // TODO: guessRows defaults to 10 and will attempt to determine a datatype. 
+                //       Setting to 1000 for now but it would be nice to just use a string type
+                //       for all columns and not have to deal with this here. 
+                return DataFrame.LoadCsv(stream, guessRows: 1000);
             }
         }
 

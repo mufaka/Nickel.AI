@@ -16,9 +16,15 @@ namespace Nickel.AI.Desktop.UI.Panels
         public ChunkedDataPanel()
         {
             _projects = SettingsManager.DataProjects;
+            HasMenuBar = true;
         }
 
         public override void DoRender()
+        {
+            DrawMenu();
+        }
+
+        private void DrawMenu()
         {
             if (ImGui.BeginMenuBar())
             {
@@ -26,30 +32,42 @@ namespace Nickel.AI.Desktop.UI.Panels
                 if (ImGui.BeginMenu("Data Projects"))
                 {
                     _showDataProjectModal = ImGui.MenuItem("<New>");
+
+                    if (_projects.Count > 0)
+                    {
+                        ImGui.Separator();
+
+                        foreach (DataProject project in _projects)
+                        {
+                            if (ImGui.MenuItem(project.Name))
+                            {
+                                _dataProject = project;
+                            }
+                        }
+
+
+                    }
                     ImGui.EndMenu();
                 }
+
+                if (_showDataProjectModal)
+                {
+                    ImGui.OpenPopup("Testing Menu Click Dialog");
+
+                    var center = ImGui.GetMainViewport().GetCenter();
+                    ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+                    ImGui.SetNextWindowSize(new Vector2(800, 400));
+                }
+
+                _dataProjectDialog.ShowModal("Testing Menu Click Dialog");
+
+                if (_dataProjectDialog.OK || _dataProjectDialog.Cancel)
+                {
+                    _showDataProjectModal = false;
+                }
+
                 ImGui.EndMenuBar();
             }
-
-            if (_showDataProjectModal)
-            {
-                ImGui.OpenPopup("Testing Menu Click Dialog");
-
-                var center = ImGui.GetMainViewport().GetCenter();
-                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                ImGui.SetNextWindowSize(new Vector2(800, 400));
-            }
-
-            _dataProjectDialog.ShowModal("Testing Menu Click Dialog");
-
-            if (_dataProjectDialog.OK || _dataProjectDialog.Cancel)
-            {
-                _showDataProjectModal = false;
-            }
-
-            // choose existing project or create new. 
-
-            // NOTE: what about editing existing? Keep as TODO..
         }
 
         public override void Update()

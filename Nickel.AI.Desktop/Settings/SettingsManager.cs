@@ -7,6 +7,7 @@ namespace Nickel.AI.Desktop.Settings
     {
         public static string SETTINGS_ROOT = "Settings";
         public static string DATA_PROJECTS = "data_projects.json";
+        public static string APP_SETTINGS = "app_settings.json";
 
         private static void InitializeSettingsDirectory()
         {
@@ -45,6 +46,40 @@ namespace Nickel.AI.Desktop.Settings
                 var path = Path.Combine(SETTINGS_ROOT, DATA_PROJECTS);
 
                 _dataProjects = value;
+                File.WriteAllText(path, JsonConvert.SerializeObject(value));
+            }
+        }
+
+        private static ApplicationSettings? _applicationSettings = null;
+
+        public static ApplicationSettings ApplicationSettings
+        {
+            get
+            {
+                if (_applicationSettings == null)
+                {
+                    var path = Path.Combine(SETTINGS_ROOT, APP_SETTINGS);
+
+                    if (File.Exists(path))
+                    {
+                        _applicationSettings = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(path));
+                    }
+                    else
+                    {
+                        _applicationSettings = new ApplicationSettings();
+                    }
+                }
+
+                // NOTE: Not possible to be null with above check
+#pragma warning disable CS8603 // Possible null reference return.
+                return _applicationSettings;
+#pragma warning restore CS8603 // Possible null reference return.
+            }
+
+            set
+            {
+                InitializeSettingsDirectory();
+                var path = Path.Combine(SETTINGS_ROOT, APP_SETTINGS);
                 File.WriteAllText(path, JsonConvert.SerializeObject(value));
             }
         }

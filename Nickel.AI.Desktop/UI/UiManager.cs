@@ -1,4 +1,6 @@
 using ImGuiNET;
+using Nickel.AI.Desktop.Models;
+using Nickel.AI.Desktop.Settings;
 using rlImGui_cs;
 
 namespace Nickel.AI.Desktop.UI;
@@ -7,6 +9,7 @@ public static class UiManager
 {
     public static List<Panel> Panels { get; set; } = new();
     public static bool Quit = false;
+    public static ApplicationSettings ApplicationSettings = SettingsManager.ApplicationSettings;
 
     public static void Setup()
     {
@@ -17,7 +20,7 @@ public static class UiManager
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
         // TODO: Persist theme choice.
-        Themes.SetStyleMoonlight();
+        SetTheme(ApplicationSettings.Theme);
         SetFont();
     }
 
@@ -79,30 +82,67 @@ public static class UiManager
         if (ImGui.BeginMenu("Theme"))
         {
             if (ImGui.MenuItem("Default"))
-                Themes.SetStyleDefault();
+                SetTheme("Default");
 
             if (ImGui.MenuItem("Blender"))
-                Themes.SetStyleBlender();
+                SetTheme("Blender");
 
             if (ImGui.MenuItem("Darcula"))
-                Themes.SetStyleDarcula();
+                SetTheme("Darcula");
 
             if (ImGui.MenuItem("Dark Ruda"))
-                Themes.SetStyleDarkRuda();
+                SetTheme("Dark Ruda");
 
             if (ImGui.MenuItem("Light"))
-                Themes.SetStyleLight();
+                SetTheme("Light");
 
             if (ImGui.MenuItem("Material Flat"))
-                Themes.SetStyleMaterialFlat();
+                SetTheme("Material Flat");
 
             if (ImGui.MenuItem("Moonlight"))
-                Themes.SetStyleMoonlight();
+                SetTheme("Moonlight");
 
             if (ImGui.MenuItem("Nord"))
-                Themes.SetStyleNord();
+                SetTheme("Nord");
 
             ImGui.EndMenu();
+        }
+    }
+
+    private static void SetTheme(string theme)
+    {
+        ApplicationSettings.Theme = theme;
+        SettingsManager.ApplicationSettings = ApplicationSettings;
+
+        switch (theme)
+        {
+            case "Default":
+                Themes.SetStyleDefault();
+                break;
+            case "Blender":
+                Themes.SetStyleBlender();
+                break;
+            case "Darcula":
+                Themes.SetStyleDarcula();
+                break;
+            case "Dark Ruda":
+                Themes.SetStyleDarkRuda();
+                break;
+            case "Light":
+                Themes.SetStyleLight();
+                break;
+            case "Material Flat":
+                Themes.SetStyleMaterialFlat();
+                break;
+            case "Moonlight":
+                Themes.SetStyleMoonlight();
+                break;
+            case "Nord":
+                Themes.SetStyleNord();
+                break;
+            default:
+                Themes.SetStyleMoonlight();
+                break;
         }
     }
 

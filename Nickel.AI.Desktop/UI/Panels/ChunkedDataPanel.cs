@@ -106,7 +106,7 @@ namespace Nickel.AI.Desktop.UI.Panels
             ImGui.TableNextColumn();
             ImGui.Text("Chunk Size");
             ImGui.TableNextColumn();
-            ImGui.Text(Convert.ToString(_dataProject!.ChunkSize));
+            ImGui.Text(Convert.ToString(_dataProject!.FrameSize));
             ImGui.PopFont();
 
             ImGui.EndTable();
@@ -187,8 +187,9 @@ namespace Nickel.AI.Desktop.UI.Panels
             // TODO: This needs to be async
             try
             {
-                var loader = new CsvDataLoader(_dataProject!.SourcePath, _dataProject!.ChunkSize, true);
+                var loader = new CsvDataLoader(_dataProject!.SourcePath, true);
                 var storage = new CsvDataFrameStorage(_dataProject.DestinationPath);
+                storage.FrameSize = _dataProject.FrameSize;
 
                 ChunkedData chunkedData = new ChunkedData();
 

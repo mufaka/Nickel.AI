@@ -11,7 +11,6 @@ namespace Nickel.AI.Data
     public class CsvDataLoader : IDataLoader
     {
         private string _csvFileName;
-        private int _frameSize;
         private bool _hasHeader;
 
         /// <summary>
@@ -20,10 +19,9 @@ namespace Nickel.AI.Data
         /// <param name="csvFileName">The full path to the csv file.</param>
         /// <param name="frameSize">The amount of rows to load into each DataFrame.</param>
         /// <param name="hasHeader">Whether or not the csv file has a header row.</param>
-        public CsvDataLoader(string csvFileName, int frameSize, bool hasHeader = true)
+        public CsvDataLoader(string csvFileName, bool hasHeader = true)
         {
             _csvFileName = csvFileName;
-            _frameSize = frameSize;
             _hasHeader = hasHeader;
         }
 
@@ -31,7 +29,7 @@ namespace Nickel.AI.Data
         /// LoadData streams data from the source csv file into an enumerable of DataFrame. 
         /// </summary>
         /// <returns>An enumerable of <see href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.data.analysis.dataframe?view=ml-dotnet-preview"/>Microsoft.Data.Analysis.DataFrame</see></returns>
-        public IEnumerable<DataFrame> LoadData()
+        public IEnumerable<DataFrame> LoadData(int frameSize)
         {
             using (var reader = new StreamReader(_csvFileName))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -60,7 +58,7 @@ namespace Nickel.AI.Data
                     // inPlace: true appends the row in place without creating a new DataFrame
                     frame.Append(record, inPlace: true);
 
-                    if (counter == _frameSize)
+                    if (counter == frameSize)
                     {
                         // clone is used to ensure the reference to frame is disconnected
                         // from the return

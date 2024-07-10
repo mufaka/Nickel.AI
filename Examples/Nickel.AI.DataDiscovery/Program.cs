@@ -12,14 +12,15 @@ namespace Nickel.AI.DataDiscovery
             try
             {
                 // define a chunk size to work with. spotify data is only a few thousand rows
-                const int chunkSize = 200;
+                const int frameSize = 200;
 
                 // platform independent paths
                 var sourcePath = Path.Combine("Data", "Most Streamed Spotify Songs 2024.csv");
                 var storagePath = Path.Combine("Storage", "Spotify");
 
-                var loader = new CsvDataLoader(sourcePath, chunkSize, true);
+                var loader = new CsvDataLoader(sourcePath, true);
                 var storage = new CsvDataFrameStorage(storagePath);
+                storage.FrameSize = frameSize;
                 ChunkedData chunkedData = new ChunkedData();
 
                 // initialize chunks if needed. just assume not initialized if storage path doesn't exist.

@@ -12,7 +12,7 @@
         //       done. (Technical Debt).
         public string SourcePath { get; set; } = String.Empty;
         public string DestinationPath { get; set; } = String.Empty;
-        public int ChunkSize { get; set; } = 1000;
+        public int FrameSize { get; set; } = 1000;
 
         public bool IsValid()
         {

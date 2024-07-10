@@ -23,8 +23,9 @@ namespace Nickel.AI.CsvLoader
                 return;
             }
 
-            var loader = new CsvDataLoader(options.CsvFile, options.FrameSize, true);
+            var loader = new CsvDataLoader(options.CsvFile, true);
             var storage = new CsvDataFrameStorage(options.StoragePath);
+            storage.FrameSize = options.FrameSize;
 
             var chunkedDataInitializer = new ChunkedData();
 

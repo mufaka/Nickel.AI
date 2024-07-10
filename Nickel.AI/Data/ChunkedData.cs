@@ -15,7 +15,7 @@ namespace Nickel.AI.Data
 
             // NOTE: IDataFrameStorage implementations should handle existing data? Clear? Warn? Abort?
 
-            foreach (var frame in dataLoader.LoadData())
+            foreach (var frame in dataLoader.LoadData(storage.FrameSize))
             {
                 var chunkedData = new ChunkedDataFrame(storage, ordinal);
                 chunkedData.Data = frame;

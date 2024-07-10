@@ -7,6 +7,7 @@ namespace Nickel.AI.Data
     public class CsvDataFrameStorage : IDataFrameStorage
     {
         public string RootPath { get; set; }
+        public int FrameSize { get; set; } = 1000;
 
         public CsvDataFrameStorage(string rootPath)
         {
@@ -23,10 +24,12 @@ namespace Nickel.AI.Data
             var fileName = GetFileName(ordinal);
             using (var stream = File.OpenRead(fileName))
             {
-                // TODO: guessRows defaults to 10 and will attempt to determine a datatype. 
-                //       Setting to 1000 for now but it would be nice to just use a string type
-                //       for all columns and not have to deal with this here. 
-                return DataFrame.LoadCsv(stream, guessRows: 1000);
+                // NOTE: guessRows defaults to 10 and will attempt to determine a datatype. 
+                //       Using FrameSize as this is the only way to avoid type conversion
+                //       errors completely. This should be OK because we should be chunking
+                //       the data into reasonable sized chunks that shouldn't take too long
+                //       to inspect.
+                return DataFrame.LoadCsv(stream, guessRows: FrameSize);
             }
         }
 

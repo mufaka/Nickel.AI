@@ -15,7 +15,7 @@ namespace Nickel.AI.Desktop.UI.Modals
         private string _projectName = string.Empty;
         private string _sourcePath = string.Empty;
         private string _destinationPath = string.Empty;
-        private int _chunkSize = 1000;
+        private int _frameSize = 1000;
         private ChooseFileDialog _sourceDialog = new ChooseFileDialog();
         private ChooseFileDialog _destinationDialog = new ChooseFileDialog();
 
@@ -63,7 +63,7 @@ namespace Nickel.AI.Desktop.UI.Modals
                 ImGui.SameLine();
                 _destinationDialog.ShowDialogButton("Directory", "Choose Destination Directory");
 
-                ImGui.InputInt("Chunk Size", ref _chunkSize, 1, 10);
+                ImGui.InputInt("Chunk Size", ref _frameSize, 1, 10);
                 ImGui.SameLine();
 
                 // TODO: Move this to a utility
@@ -80,7 +80,7 @@ namespace Nickel.AI.Desktop.UI.Modals
                 Project.Name = _projectName;
                 Project.SourcePath = _sourcePath;
                 Project.DestinationPath = _destinationPath;
-                Project.ChunkSize = _chunkSize;
+                Project.FrameSize = _frameSize;
 
                 if (Project.IsValid())
                 {

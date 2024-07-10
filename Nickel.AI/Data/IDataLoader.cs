@@ -8,6 +8,6 @@ namespace Nickel.AI.Data
         /// An enumerator for each DataFrame.
         /// </summary>
         /// <returns>An enumerator for the data to be loaded.</returns>
-        IEnumerable<DataFrame> LoadData();
+        IEnumerable<DataFrame> LoadData(int frameSize);
     }
 }

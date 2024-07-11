@@ -29,7 +29,7 @@ namespace Nickel.AI.Data
                 //       errors completely. This should be OK because we should be chunking
                 //       the data into reasonable sized chunks that shouldn't take too long
                 //       to inspect.
-                return DataFrame.LoadCsv(stream, guessRows: FrameSize);
+                return DataFrame.LoadCsv(stream);
             }
         }
 

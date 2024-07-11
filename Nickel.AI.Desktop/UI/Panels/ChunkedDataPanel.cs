@@ -31,46 +31,53 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             DrawMenu();
 
-            if (_dataProject != null)
+            if (_creatingProject)
             {
-                DrawProjectDetails();
-
-                if (_chunkedData == null)
-                {
-                    InitializeDataProject();
-                }
+                ImGui.Text("Creating project...");
             }
-
-            if (_chunkedData != null)
+            else
             {
-                if (_chunkedData.Frames.Count > 0)
+                if (_dataProject != null)
                 {
-                    _dataFrameTable.Frame = _chunkedData.Frames[_frameNumber - 1].Data;
+                    DrawProjectDetails();
 
-                    if (ImGui.BeginCombo("Choose Frame", $"Frame {_frameNumber}", ImGuiComboFlags.WidthFitPreview))
+                    if (_chunkedData == null)
                     {
-                        for (int x = 0; x < _chunkedData.Frames.Count; x++)
+                        InitializeDataProject();
+                    }
+                }
+
+                if (_chunkedData != null)
+                {
+                    if (_chunkedData.Frames.Count > 0)
+                    {
+                        _dataFrameTable.Frame = _chunkedData.Frames[_frameNumber - 1].Data;
+
+                        if (ImGui.BeginCombo("Choose Frame", $"Frame {_frameNumber}", ImGuiComboFlags.WidthFitPreview))
                         {
-                            var isSelected = _frameNumber == x + 1;
-
-                            if (ImGui.Selectable($"Frame {x + 1}", isSelected))
+                            for (int x = 0; x < _chunkedData.Frames.Count; x++)
                             {
-                                _dataFrameTable.PageNumber = 1;
-                                _frameNumber = x + 1;
+                                var isSelected = _frameNumber == x + 1;
+
+                                if (ImGui.Selectable($"Frame {x + 1}", isSelected))
+                                {
+                                    _dataFrameTable.PageNumber = 1;
+                                    _frameNumber = x + 1;
+                                }
+
+                                if (isSelected)
+                                {
+                                    ImGui.SetItemDefaultFocus();
+                                }
                             }
 
-                            if (isSelected)
-                            {
-                                ImGui.SetItemDefaultFocus();
-                            }
+                            ImGui.EndCombo();
                         }
 
-                        ImGui.EndCombo();
+                        ImGui.Separator();
+
+                        _dataFrameTable.Render();
                     }
-
-                    ImGui.Separator();
-
-                    _dataFrameTable.Render();
                 }
             }
         }
@@ -79,7 +86,7 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             ImGui.SameLine(ImGui.GetContentRegionAvail().X * .5f);
             ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 5.0f);
-            ImGui.BeginChild("project-detail", new Vector2(ImGui.GetContentRegionAvail().X, 100), ImGuiChildFlags.Border, ImGuiWindowFlags.HorizontalScrollbar);
+            ImGui.BeginChild("project-detail", new Vector2(ImGui.GetContentRegionAvail().X, 130), ImGuiChildFlags.Border, ImGuiWindowFlags.HorizontalScrollbar);
             ImGui.BeginTable("project-table", 2);
             ImGui.TableSetupColumn("Attribute", ImGuiTableColumnFlags.WidthFixed, 100.0f);
 
@@ -184,7 +191,21 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         private void InitializeDataProject()
         {
-            // TODO: This needs to be async
+            try
+            {
+                _creatingProject = true;
+
+                var thread = new Thread(() => { InitializeProjectAsync(); });
+                thread.Start();
+            }
+            catch (Exception ex)
+            {
+                // TODO: Logging
+            }
+        }
+
+        private void InitializeProjectAsync()
+        {
             try
             {
                 var loader = new CsvDataLoader(_dataProject!.SourcePath, true);
@@ -205,6 +226,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                 }
 
                 _chunkedData = chunkedData;
+                _creatingProject = false;
             }
             catch (Exception ex)
             {

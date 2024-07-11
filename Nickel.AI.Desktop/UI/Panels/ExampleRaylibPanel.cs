@@ -1,171 +1,73 @@
 ﻿using ImGuiNET;
 using Raylib_cs;
+using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI.Panels
 {
     public class ExampleRaylibPanel : PanelRaylib
     {
-        private Random _random = new Random(Guid.NewGuid().GetHashCode());
-        private List<Circle> _circles = new List<Circle>();
+        private Camera3D _camera3D = new Camera3D();
+        private Vector3 _cubePosition = new Vector3(0.0f, 0.0f, 0.0f);
+        private Font _font;
+
+        private Vector2[] _helpTextVectors =
+        {
+            new Vector2(20, 20),
+            new Vector2(40, 40),
+            new Vector2(40, 60),
+            new Vector2(40, 80)
+        };
+
+        private float _fontSize = 16.0f;
+        private float _fontSpacing = 1.0f;
+
+        public override void Setup()
+        {
+            _camera3D.Position = new Vector3(10.0f, 10.0f, 10.0f);
+            _camera3D.Target = new Vector3(0.0f, 0.0f, 0.0f);
+            _camera3D.Up = new Vector3(0.0f, 1.0f, 0.0f);
+            _camera3D.FovY = 45;
+            _camera3D.Projection = CameraProjection.Perspective;
+
+            _font = Raylib.LoadFont(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"));
+        }
 
         public override void RenderRaylib()
         {
-            //Width = (int)ImGui.GetWindowWidth();
-            //Height = (int)ImGui.GetWindowHeight();
-
-            if (_circles.Count == 0)
+            if (ImGui.IsWindowHovered())
             {
-                _circles = GenerateCircles();
-            }
-
-            DrawGrid();
-
-            if (ImGui.Button("Reset"))
-            {
-                _circles = GenerateCircles();
-            }
-        }
-
-        private void DrawGrid()
-        {
-            const int cellSize = 20;
-
-            //for (int i = cellSize; i < _height; i += cellSize)
-            for (int i = 1; i < Height; i += cellSize)
-            {
-                Raylib.DrawLine(0, i, Width, i, Color.DarkGray);
-            }
-
-            //for (int i = cellSize; i < _width; i += cellSize)
-            for (int i = 1; i < Width; i += cellSize)
-            {
-                Raylib.DrawLine(i, 0, i, Height, Color.DarkGray);
-            }
-
-            //if (ImGui.GetFrameCount() % 5 == 0)
-            {
-                foreach (var circle in _circles)
+                // Only update camera when right click held or moving scroll wheel
+                if (Raylib.IsMouseButtonDown(MouseButton.Right))
                 {
-                    circle.Move(_random);
-
-                    if (circle.X < 0) circle.X = 0;
-                    if (circle.X > Width) circle.X = Width;
-                    if (circle.Y < 0) circle.Y = 0;
-                    if (circle.Y > Height) circle.Y = Height;
-                }
-            }
-
-            foreach (var circle in _circles)
-            {
-                Raylib.DrawCircleGradient(circle.X, circle.Y, circle.Size, circle.Color, circle.InnerColor);
-            }
-        }
-
-        private class Circle
-        {
-            public int X, Y;
-            public Color Color;
-            public Color InnerColor;
-            public int Size;
-            public bool Alive = true;
-
-            private int _movementCount = 0;
-            private int _lastMovement = 4; // no where
-
-            public void Move(Random random)
-            {
-                if (!Alive) return;
-
-                // randomize the amount of moves in the same direction
-                var directionCount = random.Next(1, 100);
-
-                if (_movementCount < directionCount)
-                {
-                    _movementCount++;
-                }
-                else
-                {
-                    _movementCount = 0;
-                    _lastMovement = random.Next(0, 9);
+                    Raylib.UpdateCamera(ref _camera3D, CameraMode.Free);
                 }
 
-                var growthCheck = random.Next(1, 1000);
-
-                if (growthCheck == 800)
+                if (Raylib.GetMouseWheelMove() != 0.0f)
                 {
-                    Size = Size - 1;
-
-                    if (Size < 2)
-                    {
-                        Alive = false;
-                    }
+                    Raylib.UpdateCamera(ref _camera3D, CameraMode.Free);
                 }
 
-                switch (_lastMovement)
-                {
-                    case 0:
-                        X -= 1;
-                        Y -= 1;
-                        break;
-                    case 1:
-                        Y -= 1;
-                        break;
-                    case 2:
-                        X += 1;
-                        Y -= 1;
-                        break;
-                    case 3:
-                        X -= 1;
-                        break;
-                    case 5:
-                        X += 1;
-                        break;
-                    case 6:
-                        X -= 1;
-                        Y += 1;
-                        break;
-                    case 7:
-                        Y += 1;
-                        break;
-                    case 8:
-                        X += 1;
-                        Y += 1;
-                        break;
-                }
-
-            }
-        }
-
-        private List<Circle> GenerateCircles()
-        {
-            var circles = new List<Circle>();
-
-            float minCount = 100.0f;
-            float maxCount = 5000.0f;
-            float biggestSize = 20.0f;
-            float smallestSize = 4.0f;
-
-            var circleCount = _random.Next((int)minCount, (int)maxCount + 1);
-
-            // scale max size based on amount of circles. less circles means bigger size
-            float factor = (circleCount - minCount) / (maxCount - minCount);
-            float maxSize = biggestSize - (biggestSize - smallestSize) * factor;
-
-            for (int i = 0; i < circleCount; i++)
-            {
-                var circle = new Circle();
-
-                circle.X = _random.Next(0, Width);
-                circle.Y = _random.Next(0, Height);
-                circle.Size = _random.Next((int)smallestSize, (int)maxSize + 1);
-
-                circle.Color = new Color(_random.Next(0, 256), _random.Next(0, 256), _random.Next(0, 256), 255);
-                circle.InnerColor = new Color(_random.Next(0, 256), _random.Next(0, 256), _random.Next(0, 256), 255);
-
-                circles.Add(circle);
+                // reset target to look at cube.
+                if (Raylib.IsKeyPressed(KeyboardKey.Z)) _camera3D.Target = _cubePosition;
             }
 
-            return circles;
+            Raylib.ClearBackground(Color.White);
+
+            Raylib.BeginMode3D(_camera3D);
+
+            Raylib.DrawCube(_cubePosition, 2.0f, 2.0f, 2.0f, Color.Red);
+            Raylib.DrawCubeWires(_cubePosition, 2.0f, 2.0f, 2.0f, Color.Black);
+
+            Raylib.DrawGrid(10, 1.0f);
+            Raylib.EndMode3D();
+
+            Raylib.DrawRectangle(10, 10, 320, 93, Raylib.Fade(Color.SkyBlue, 0.5f));
+            Raylib.DrawRectangleLines(10, 10, 320, 93, Color.Blue);
+
+            Raylib.DrawTextEx(_font, "Free camera default controls:", _helpTextVectors[0], _fontSize, _fontSpacing, Color.Black);
+            Raylib.DrawTextEx(_font, "- Mouse Wheel to Zoom in-out", _helpTextVectors[1], _fontSize, _fontSpacing, Color.DarkGray);
+            Raylib.DrawTextEx(_font, "- Right click to Pan", _helpTextVectors[2], _fontSize, _fontSpacing, Color.DarkGray);
+            Raylib.DrawTextEx(_font, "- Z to move to (0, 0, 0)", _helpTextVectors[3], _fontSize, _fontSpacing, Color.DarkGray);
         }
 
         public override void Update()

@@ -56,6 +56,7 @@ namespace Nickel.AI.Desktop
             raylibPanel.MenuCategory = "Examples";
             raylibPanel.DefaultWindowSize.X = 800;
             raylibPanel.DefaultWindowSize.Y = 600;
+            raylibPanel.Setup();
 
             UI.UiManager.Panels.Add(raylibPanel);
 

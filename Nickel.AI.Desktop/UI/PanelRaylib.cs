@@ -42,6 +42,7 @@ namespace Nickel.AI.Desktop.UI
             rlImGui.ImageRenderTexture(ViewTexture);
         }
 
+        public abstract void Setup();
         public abstract void RenderRaylib();
     }
 }

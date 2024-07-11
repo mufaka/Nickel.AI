@@ -33,8 +33,4 @@ public class ExamplePanel : Panel
         //DataFrameTable.Render();
         DataProjectDialog.ShowDialogButton("Create", "Create Data Project");
     }
-
-    public override void Update()
-    {
-    }
 }

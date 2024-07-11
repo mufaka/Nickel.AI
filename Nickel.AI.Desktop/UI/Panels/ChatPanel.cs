@@ -83,10 +83,5 @@ namespace Nickel.AI.Desktop.UI.Panels
                 _answer = completionResponse.Response;
             }
         }
-
-        public override void Update()
-        {
-
-        }
     }
 }

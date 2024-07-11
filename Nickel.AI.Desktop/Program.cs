@@ -29,9 +29,6 @@ namespace Nickel.AI.Desktop
 
             while (!Raylib.WindowShouldClose() && !UI.UiManager.Quit)
             {
-                // Update:
-                UI.UiManager.Update();
-
                 // Render:
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.DarkGray);

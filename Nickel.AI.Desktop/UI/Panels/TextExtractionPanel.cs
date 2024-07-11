@@ -86,10 +86,5 @@ namespace Nickel.AI.Desktop.UI.Panels
                 // TODO: Log exception
             }
         }
-
-        public override void Update()
-        {
-
-        }
     }
 }

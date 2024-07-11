@@ -41,7 +41,9 @@ public abstract class Panel
         if (!isOpen) Detach();
     }
 
-    public abstract void DoRender();
+    // called before rendering loop
+    public virtual void Setup() { }
 
-    public abstract void Update();
+    // called for rendering
+    public abstract void DoRender();
 }

@@ -13,21 +13,22 @@ public static class UiManager
 
     public static void Setup()
     {
-        rlImGui.Setup(true);
-
-        // enable docking.
-        var io = ImGui.GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-
-        // TODO: Persist theme choice.
+        // Dark mode and docking enabled.
+        rlImGui.Setup(true, true);
         SetTheme(ApplicationSettings.Theme);
-        SetFont();
+        SetFonts();
+
+        // 
+        foreach (var panel in Panels)
+        {
+            panel.Setup();
+        }
     }
 
     public static ImFontPtr FONT_JETBRAINS_MONO_MEDIUM_20;
     public static ImFontPtr FONT_JETBRAINS_MONO_MEDIUM_16;
 
-    private static void SetFont()
+    private static void SetFonts()
     {
         var io = ImGui.GetIO();
         io.Fonts.Clear();
@@ -151,12 +152,6 @@ public static class UiManager
         foreach (var panel in Panels)
             panel.Detach();
         rlImGui.Shutdown();
-    }
-
-    public static void Update()
-    {
-        foreach (var panel in Panels)
-            panel.Update();
     }
 
     public static void Render()

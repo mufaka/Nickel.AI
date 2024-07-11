@@ -69,9 +69,5 @@ namespace Nickel.AI.Desktop.UI.Panels
             Raylib.DrawTextEx(_font, "- Right click to Pan", _helpTextVectors[2], _fontSize, _fontSpacing, Color.DarkGray);
             Raylib.DrawTextEx(_font, "- Z to move to (0, 0, 0)", _helpTextVectors[3], _fontSize, _fontSpacing, Color.DarkGray);
         }
-
-        public override void Update()
-        {
-        }
     }
 }

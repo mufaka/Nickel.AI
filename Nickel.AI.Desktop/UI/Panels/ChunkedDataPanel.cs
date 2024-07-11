@@ -211,11 +211,5 @@ namespace Nickel.AI.Desktop.UI.Panels
                 // TODO: Logging
             }
         }
-
-
-        public override void Update()
-        {
-
-        }
     }
 }

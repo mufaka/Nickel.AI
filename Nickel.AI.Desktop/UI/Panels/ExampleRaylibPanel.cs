@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.Logging;
 using Raylib_cs;
 using System.Numerics;
 
@@ -9,6 +10,12 @@ namespace Nickel.AI.Desktop.UI.Panels
         private Camera3D _camera3D = new Camera3D();
         private Vector3 _cubePosition = new Vector3(0.0f, 0.0f, 0.0f);
         private Font _font;
+        private ILogger _logger;
+
+        public ExampleRaylibPanel(ILogger<ExampleRaylibPanel> logger)
+        {
+            _logger = logger;
+        }
 
         private Vector2[] _helpTextVectors =
         {

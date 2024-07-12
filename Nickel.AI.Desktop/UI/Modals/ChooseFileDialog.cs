@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.DependencyInjection;
 using Nickel.AI.Desktop.UI.Controls;
 using System.Numerics;
 
@@ -6,7 +7,7 @@ namespace Nickel.AI.Desktop.UI.Modals
 {
     public class ChooseFileDialog : IModalDialog
     {
-        private FileChooser _fileChooser = new FileChooser();
+        private FileChooser _fileChooser = App.Host.Services.GetRequiredService<FileChooser>();
 
         public string SelectedPath { get; set; } = String.Empty;
 

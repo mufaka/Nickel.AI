@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.90.8.1" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.22.0-preview.24271.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.6.24327.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.6.24327.7" />
     <PackageReference Include="Raylib-cs" Version="6.1.1" />
   </ItemGroup>
 
@@ -25,10 +27,6 @@
     <None Update="Resources\JetBrainsMono-Medium.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Logging\" />
   </ItemGroup>
 
 </Project>

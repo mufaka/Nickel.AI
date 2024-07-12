@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.Logging;
 using Nickel.AI.Chunking;
 using Nickel.AI.Desktop.UI.Modals;
 using Nickel.AI.Desktop.Utilities;
@@ -12,6 +13,12 @@ namespace Nickel.AI.Desktop.UI.Panels
         private ChooseFileDialog _fileDialog = new ChooseFileDialog();
         private string _selectedPath = string.Empty;
         private ExtractedDocument? _extractedDocument;
+        private readonly ILogger _logger;
+
+        public TextExtractionPanel(ILogger<TextExtractionPanel> logger)
+        {
+            _logger = logger;
+        }
 
         public override void DoRender()
         {
@@ -59,8 +66,6 @@ namespace Nickel.AI.Desktop.UI.Panels
                     }
                 }
             }
-
-            // TODO: Need to have some way of showing errors. Popup? Add a console log panel as well.
         }
 
         private void ExtractDocument(string selectedPath)
@@ -71,6 +76,7 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         private void ExtractDocumentAsync(string selectedPath)
         {
+            _logger.LogInformation($"Started extracting text from {selectedPath}");
             // TODO: Target Token count and overlap factor should be options
             var chunker = new SemanticKernelTextChunker(500);
             var tokenizer = new TiktokenTokenizer();
@@ -80,10 +86,12 @@ namespace Nickel.AI.Desktop.UI.Panels
             try
             {
                 _extractedDocument = extractor.Extract(new Uri(selectedPath));
+
+                _logger.LogInformation($"Finished extracting text from {selectedPath}");
             }
             catch (Exception ex)
             {
-                // TODO: Log exception
+                _logger.LogCritical(ex, ex.Message);
             }
         }
     }

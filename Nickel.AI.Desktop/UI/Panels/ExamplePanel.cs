@@ -1,4 +1,5 @@
 using Microsoft.Data.Analysis;
+using Microsoft.Extensions.Logging;
 using Nickel.AI.Desktop.UI.Controls;
 using Nickel.AI.Desktop.UI.Modals;
 
@@ -9,17 +10,11 @@ public class ExamplePanel : Panel
     private DataFrameTable DataFrameTable { get; set; }
     private ChooseFileDialog ChooseFileDialog { get; set; }
     private DataProjectDialog DataProjectDialog { get; set; }
+    private readonly ILogger _logger;
 
-    private FileChooser _fileChooser;
-
-    public ExamplePanel(string menu = "Examples", string label = "Label")
+    public ExamplePanel(ILogger<ExamplePanel> logger)
     {
-        DefaultWindowSize.X = 600;
-        DefaultWindowSize.Y = 400;
-        MenuCategory = menu;
-        Label = label;
-
-        _fileChooser = new FileChooser();
+        _logger = logger;
         ChooseFileDialog = new ChooseFileDialog();
         DataProjectDialog = new DataProjectDialog();
         DataFrameTable = new DataFrameTable();

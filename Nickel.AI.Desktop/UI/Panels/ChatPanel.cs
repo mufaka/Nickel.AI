@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.Logging;
 using Nickel.AI.Desktop.Utilities;
 using OllamaSharp;
 using OllamaSharp.Models;
@@ -10,13 +11,11 @@ namespace Nickel.AI.Desktop.UI.Panels
     {
         private static string _question = string.Empty;
         private static string _answer = string.Empty;
+        private readonly ILogger _logger;
 
-        public ChatPanel()
+        public ChatPanel(ILogger<ChatPanel> logger)
         {
-            Label = "Ollama Chat";
-            MenuCategory = "Chat";
-            DefaultWindowSize.X = 800;
-            DefaultWindowSize.Y = 600;
+            _logger = logger;
         }
 
         // NOTE: https://raa.is/ImStudio/ is a wysiwyg designer for imgui. Will have to port output to C#.

@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.Logging;
 using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI.Controls
@@ -9,10 +10,12 @@ namespace Nickel.AI.Desktop.UI.Controls
         private DriveInfo? _selectedDrive;
         private DirectoryInfo? _selectedDirectory;
         private FileInfo? _selectedFile;
+        private readonly ILogger _logger;
 
-        public FileChooser()
+        public FileChooser(ILogger<FileChooser> logger)
         {
             _drives = DriveInfo.GetDrives();
+            _logger = logger;
         }
 
         public DirectoryInfo? SelectedDirectory { get { return _selectedDirectory; } }
@@ -116,8 +119,7 @@ namespace Nickel.AI.Desktop.UI.Controls
             }
             catch (Exception ex)
             {
-                // TODO: Handle access exceptions? There doesn't seem to be a good way to check permissions
-                //       across platforms ... at least that I can test. 
+                _logger.LogCritical(ex, ex.Message);
             }
         }
 

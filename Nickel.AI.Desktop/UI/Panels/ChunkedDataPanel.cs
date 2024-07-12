@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Extensions.Logging;
 using Nickel.AI.Data;
 using Nickel.AI.Desktop.Models;
 using Nickel.AI.Desktop.Settings;
@@ -20,11 +21,13 @@ namespace Nickel.AI.Desktop.UI.Panels
         private bool _creatingProject = false;
 
         private int _frameNumber = 1;
+        private readonly ILogger _logger;
 
-        public ChunkedDataPanel()
+        public ChunkedDataPanel(ILogger<ChunkedDataPanel> logger)
         {
             _projects = SettingsManager.DataProjects;
             HasMenuBar = true;
+            _logger = logger;
         }
 
         public override void DoRender()
@@ -200,7 +203,7 @@ namespace Nickel.AI.Desktop.UI.Panels
             }
             catch (Exception ex)
             {
-                // TODO: Logging
+                _logger.LogCritical(ex, ex.Message);
             }
         }
 
@@ -230,7 +233,7 @@ namespace Nickel.AI.Desktop.UI.Panels
             }
             catch (Exception ex)
             {
-                // TODO: Logging
+                _logger.LogCritical(ex, ex.Message);
             }
         }
     }

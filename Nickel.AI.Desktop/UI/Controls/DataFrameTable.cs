@@ -126,8 +126,11 @@ namespace Nickel.AI.Desktop.UI.Controls
                 ImGui.SameLine();
             }
 
-            var firstPager = Math.Max(1, PageNumber - 3);
-            var lastPager = Math.Min(firstPager + 5, pages);
+            var contentRegion = ImGui.GetContentRegionAvail();
+            int sizeFactor = (int)contentRegion.X / 2;
+
+            var firstPager = Math.Max(1, PageNumber - sizeFactor);
+            var lastPager = Math.Min(firstPager + sizeFactor, pages);
 
             for (int x = firstPager; x <= lastPager; x++)
             {

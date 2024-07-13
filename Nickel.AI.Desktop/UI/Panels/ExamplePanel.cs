@@ -1,3 +1,4 @@
+using ImGuiNET;
 using Microsoft.Data.Analysis;
 using Microsoft.Extensions.Logging;
 using Nickel.AI.Desktop.UI.Controls;
@@ -25,7 +26,9 @@ public class ExamplePanel : Panel
 
     public override void DoRender()
     {
-        //DataFrameTable.Render();
-        DataProjectDialog.ShowDialogButton("Create", "Create Data Project");
+        if (ImGui.Button("Add Log"))
+        {
+            _logger.LogInformation("Button Clicked");
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             ImGui.InputTextMultiline("##log", ref _logText, 1024, ImGui.GetContentRegionAvail());
 
-            if (ImGui.GetFrameCount() % 100 == 0)
+            if (ImGui.GetFrameCount() % 60 == 0)
             {
                 SetLogText();
             }

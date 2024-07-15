@@ -29,9 +29,6 @@ namespace Nickel.AI.Desktop
 
             Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
             Raylib.InitWindow(width, height, title);
-            Raylib.SetWindowMinSize(1024, 800);
-
-            //Raylib.MaximizeWindow();
         }
 
         public void Run()

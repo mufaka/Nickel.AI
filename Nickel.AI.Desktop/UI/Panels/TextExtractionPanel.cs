@@ -20,6 +20,11 @@ namespace Nickel.AI.Desktop.UI.Panels
             _logger = logger;
         }
 
+        public override void HandleUiMessage(UiMessage message)
+        {
+
+        }
+
         public override void DoRender()
         {
             float windowWidth = ImGui.GetWindowWidth();

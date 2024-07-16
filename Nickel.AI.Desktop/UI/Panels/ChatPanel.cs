@@ -18,8 +18,27 @@ namespace Nickel.AI.Desktop.UI.Panels
             _logger = logger;
         }
 
+        public override void HandleUiMessage(UiMessage message)
+        {
+            if (message != null)
+            {
+                // TODO: need a cleaner way to define message types
+                if (message.MessageType == UiMessageConstants.CHAT_SET_QUESTION)
+                {
+                    var question = message.Body as string;
+
+                    if (question != null)
+                    {
+                        _question = question;
+
+                        if (!Open) Open = true;
+                    }
+                }
+            }
+        }
+
         // NOTE: https://raa.is/ImStudio/ is a wysiwyg designer for imgui. Will have to port output to C#.
-        public unsafe override void DoRender()
+        public override void DoRender()
         {
             // NOTE: ImGui isn't really event driven so things like capturing "Enter" key
             //       inside of InputText isn't straight forward. It returns true if the

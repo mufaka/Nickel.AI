@@ -162,8 +162,16 @@ public static class UiManager
 
         ImGui.DockSpaceOverViewport(ImGui.GetID("NickelAI"), ImGui.GetMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
 
+        var message = MessageQueue.Instance.Dequeue();
+
         foreach (var panel in Panels)
+        {
+            if (message != null)
+            {
+                panel.HandleUiMessage(message);
+            }
             panel.Render();
+        }
 
         //ImGui.ShowDemoWindow();
 

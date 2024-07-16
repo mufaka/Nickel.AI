@@ -44,6 +44,10 @@ public abstract class Panel
     // called before rendering loop
     public virtual void Setup() { }
 
+    // handle UiMessages
+    public abstract void HandleUiMessage(UiMessage message);
+
     // called for rendering
     public abstract void DoRender();
+
 }

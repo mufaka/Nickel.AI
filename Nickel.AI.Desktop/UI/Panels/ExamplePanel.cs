@@ -24,11 +24,25 @@ public class ExamplePanel : Panel
 
     // Interactive ImGui manual: https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
 
+    public override void HandleUiMessage(UiMessage message)
+    {
+
+    }
+
     public override void DoRender()
     {
         if (ImGui.Button("Add Log"))
         {
             _logger.LogInformation("Button Clicked");
+        }
+
+        if (ImGui.Button("Ask Ollama"))
+        {
+            var message = new UiMessage();
+            message.MessageType = UiMessageConstants.CHAT_SET_QUESTION;
+            message.Body = "What is a good way to pass messages between ImGui windows?";
+
+            MessageQueue.Instance.Enqueue(message);
         }
     }
 }

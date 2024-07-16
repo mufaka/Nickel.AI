@@ -26,6 +26,11 @@ namespace Nickel.AI.Desktop.UI.Panels
             _logText = buff.ToString();
         }
 
+        public override void HandleUiMessage(UiMessage message)
+        {
+
+        }
+
         public override void DoRender()
         {
             ImGui.InputTextMultiline("##log", ref _logText, 1024, ImGui.GetContentRegionAvail());

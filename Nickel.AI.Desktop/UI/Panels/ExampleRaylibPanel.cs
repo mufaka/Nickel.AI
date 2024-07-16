@@ -39,6 +39,11 @@ namespace Nickel.AI.Desktop.UI.Panels
             _font = Raylib.LoadFont(Path.Combine("Resources", "JetBrainsMono-Medium.ttf"));
         }
 
+        public override void HandleUiMessage(UiMessage message)
+        {
+
+        }
+
         public override void RenderRaylib()
         {
             if (ImGui.IsWindowHovered())

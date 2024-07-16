@@ -9,6 +9,10 @@ namespace Nickel.AI.Desktop.Settings
         public static string DATA_PROJECTS = "data_projects.json";
         public static string APP_SETTINGS = "app_settings.json";
 
+        private static ApplicationSettings? _applicationSettings = null;
+        private static List<DataProject> _dataProjects = new List<DataProject>();
+
+
         private static void InitializeSettingsDirectory()
         {
             if (!Directory.Exists(SETTINGS_ROOT))
@@ -17,7 +21,18 @@ namespace Nickel.AI.Desktop.Settings
             }
         }
 
-        private static List<DataProject> _dataProjects = new List<DataProject>();
+        public static void SaveAll()
+        {
+            if (_applicationSettings != null)
+            {
+                ApplicationSettings = _applicationSettings;
+            }
+
+            if (_dataProjects != null)
+            {
+                DataProjects = _dataProjects;
+            }
+        }
 
         public static List<DataProject> DataProjects
         {
@@ -50,8 +65,6 @@ namespace Nickel.AI.Desktop.Settings
             }
         }
 
-        private static ApplicationSettings? _applicationSettings = null;
-
         public static ApplicationSettings ApplicationSettings
         {
             get
@@ -80,7 +93,7 @@ namespace Nickel.AI.Desktop.Settings
             {
                 InitializeSettingsDirectory();
                 var path = Path.Combine(SETTINGS_ROOT, APP_SETTINGS);
-                File.WriteAllText(path, JsonConvert.SerializeObject(value));
+                File.WriteAllText(path, JsonConvert.SerializeObject(value, Formatting.Indented));
             }
         }
     }

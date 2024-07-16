@@ -101,7 +101,7 @@ namespace Nickel.AI.Desktop.UI.Panels
             {
                 try
                 {
-                    var ollamaEndpointUrl = SettingsManager.ApplicationSettings.OllamaEndPoint;
+                    var ollamaEndpointUrl = SettingsManager.ApplicationSettings.Ollama.EndPoint;
 
                     if (String.IsNullOrWhiteSpace(ollamaEndpointUrl))
                     {
@@ -123,7 +123,16 @@ namespace Nickel.AI.Desktop.UI.Panels
                     var completionRequest = new GenerateCompletionRequest();
                     completionRequest.Stream = false;
                     completionRequest.Prompt = _question;
-                    completionRequest.Model = "llama3";
+
+                    var model = SettingsManager.ApplicationSettings.Ollama.Model;
+
+                    if (String.IsNullOrWhiteSpace(model))
+                    {
+                        _logger.LogInformation("Ollama model is not configured. Using \"llama3\" as a default.");
+                        model = "llama3";
+                    }
+
+                    completionRequest.Model = model;
 
                     var completionResponse = await ollama.GetCompletion(completionRequest);
                     _answer = completionResponse.Response;

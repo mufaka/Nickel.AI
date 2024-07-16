@@ -44,7 +44,10 @@ public static class UiManager
             if (ImGui.BeginMenu("File"))
             {
                 if (ImGui.MenuItem("Exit"))
+                {
+                    SettingsManager.SaveAll();
                     Quit = true;
+                }
 
                 ImGui.EndMenu();
             }

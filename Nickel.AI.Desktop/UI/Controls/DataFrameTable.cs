@@ -48,15 +48,20 @@ namespace Nickel.AI.Desktop.UI.Controls
             if (_dataFrame != null)
             {
                 // column options
-                if (ImGui.BeginTable("columnSelectTable", 6, ImGuiTableFlags.None))
+                if (ImGui.CollapsingHeader("Columns"))
                 {
-                    foreach (DataFrameColumn column in _dataFrame.Columns)
+                    ImGui.PushFont(UiManager.FONT_JETBRAINS_MONO_MEDIUM_16);
+                    if (ImGui.BeginTable("columnSelectTable", 8, ImGuiTableFlags.None))
                     {
-                        ImGui.TableNextColumn();
-                        ImGui.Checkbox(column.Name, ref _columnState[column.Name].Visible);
-                    }
+                        foreach (DataFrameColumn column in _dataFrame.Columns)
+                        {
+                            ImGui.TableNextColumn();
+                            ImGui.Checkbox(column.Name, ref _columnState[column.Name].Visible);
+                        }
 
-                    ImGui.EndTable();
+                        ImGui.EndTable();
+                    }
+                    ImGui.PopFont();
                 }
 
                 ImGui.Separator();

@@ -66,6 +66,11 @@ namespace Nickel.AI.Desktop.UI.Controls
 
                             foreach (var file in files)
                             {
+                                if ((file.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                                {
+                                    continue;
+                                }
+
                                 ImGui.TableNextRow();
 
                                 ImGui.TableSetColumnIndex(0);
@@ -111,6 +116,11 @@ namespace Nickel.AI.Desktop.UI.Controls
                 {
                     foreach (var childDirectory in directories)
                     {
+                        if ((childDirectory.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            continue;
+                        }
+
                         RenderDirectoryTree(childDirectory);
                     }
 

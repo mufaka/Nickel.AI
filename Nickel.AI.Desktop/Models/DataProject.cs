@@ -11,6 +11,7 @@
         //       configuration. Deferring doing this "the right way" until other IDataLoader or IDataStorage implementations are
         //       done. (Technical Debt).
         public string SourcePath { get; set; } = String.Empty;
+        public bool SourceHasHeaderRow { get; set; } = true;
         public string DestinationPath { get; set; } = String.Empty;
         public int FrameSize { get; set; } = 1000;
 

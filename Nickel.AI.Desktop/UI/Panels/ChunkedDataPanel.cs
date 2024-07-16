@@ -216,7 +216,7 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             try
             {
-                var loader = new CsvDataLoader(_dataProject!.SourcePath, true);
+                var loader = new CsvDataLoader(_dataProject!.SourcePath, _dataProject!.SourceHasHeaderRow);
                 var storage = new CsvDataFrameStorage(_dataProject.DestinationPath);
                 storage.FrameSize = _dataProject.FrameSize;
 

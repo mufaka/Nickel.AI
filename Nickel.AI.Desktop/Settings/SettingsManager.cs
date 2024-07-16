@@ -61,7 +61,7 @@ namespace Nickel.AI.Desktop.Settings
                 var path = Path.Combine(SETTINGS_ROOT, DATA_PROJECTS);
 
                 _dataProjects = value;
-                File.WriteAllText(path, JsonConvert.SerializeObject(value));
+                File.WriteAllText(path, JsonConvert.SerializeObject(value, Formatting.Indented));
             }
         }
 

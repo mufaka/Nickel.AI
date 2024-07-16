@@ -22,17 +22,28 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             if (message != null)
             {
-                // TODO: need a cleaner way to define message types
-                if (message.MessageType == UiMessageConstants.CHAT_SET_QUESTION)
+                switch (message.MessageType)
                 {
-                    var question = message.Body as string;
+                    case UiMessageConstants.CHAT_SET_QUESTION:
+                        SetQuestion(message.Body as string, false);
+                        break;
+                    case UiMessageConstants.CHAT_ASK_QUESTION:
+                        SetQuestion(message.Body as string, true);
+                        break;
+                }
+            }
+        }
 
-                    if (question != null)
-                    {
-                        _question = question;
+        private void SetQuestion(string? question, bool triggerLLM)
+        {
+            if (question != null)
+            {
+                _question = question.Trim();
+                Open = true;
 
-                        if (!Open) Open = true;
-                    }
+                if (triggerLLM)
+                {
+                    AskOllama();
                 }
             }
         }

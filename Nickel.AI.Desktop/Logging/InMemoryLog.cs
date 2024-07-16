@@ -21,6 +21,11 @@ namespace Nickel.AI.Desktop.Logging
             _logItems.Insert(0, item);
         }
 
+        public void Clear()
+        {
+            _logItems.Clear();
+        }
+
         public bool IsEnabled(LogLevel logLevel)
         {
             // TODO: allow for setting log level

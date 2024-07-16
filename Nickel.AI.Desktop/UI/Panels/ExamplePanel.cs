@@ -26,7 +26,6 @@ public class ExamplePanel : Panel
 
     public override void HandleUiMessage(UiMessage message)
     {
-
     }
 
     public override void DoRender()
@@ -34,15 +33,19 @@ public class ExamplePanel : Panel
         if (ImGui.Button("Add Log"))
         {
             _logger.LogInformation("Button Clicked");
+            MessageQueue.Instance.Enqueue(UiMessageConstants.LOG_SHOW_LOG, null);
         }
+        ImGui.SameLine();
+
+        if (ImGui.Button("Clear Log"))
+        {
+            MessageQueue.Instance.Enqueue(UiMessageConstants.LOG_CLEAR_LOG, null);
+        }
+        ImGui.SameLine();
 
         if (ImGui.Button("Ask Ollama"))
         {
-            var message = new UiMessage();
-            message.MessageType = UiMessageConstants.CHAT_SET_QUESTION;
-            message.Body = "What is a good way to pass messages between ImGui windows?";
-
-            MessageQueue.Instance.Enqueue(message);
+            MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, "What is a good way to pass messages between ImGui windows?");
         }
     }
 }

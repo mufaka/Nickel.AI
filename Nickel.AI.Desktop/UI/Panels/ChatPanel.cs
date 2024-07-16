@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Microsoft.Extensions.Logging;
+using Nickel.AI.Desktop.Settings;
 using Nickel.AI.Desktop.Utilities;
 using OllamaSharp;
 using OllamaSharp.Models;
@@ -98,18 +99,39 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             if (_question.Length > 0)
             {
-                // TODO: make the endpoint and model configurable.
-                var ollamaEndpoint = new Uri("http://localhost:11434");
-                var ollama = new OllamaApiClient(ollamaEndpoint);
+                try
+                {
+                    var ollamaEndpointUrl = SettingsManager.ApplicationSettings.OllamaEndPoint;
 
-                // ask without giving a context
-                var completionRequest = new GenerateCompletionRequest();
-                completionRequest.Stream = false;
-                completionRequest.Prompt = _question;
-                completionRequest.Model = "llama3";
+                    if (String.IsNullOrWhiteSpace(ollamaEndpointUrl))
+                    {
+                        _logger.LogInformation("Ollama endpoint is not configured. Using \"http://localhost:11434\" as a default.");
+                        ollamaEndpointUrl = "http://localhost:11434";
+                    }
 
-                var completionResponse = await ollama.GetCompletion(completionRequest);
-                _answer = completionResponse.Response;
+                    Uri? ollamaEndpoint;
+
+                    if (!Uri.TryCreate(ollamaEndpointUrl, UriKind.Absolute, out ollamaEndpoint))
+                    {
+                        _logger.LogInformation($"Ollama configured endpoint is invalid [{ollamaEndpointUrl}]. Using \"http://localhost:11434\" as a default.");
+                        ollamaEndpoint = new Uri("http://localhost:11434");
+                    }
+
+                    var ollama = new OllamaApiClient(ollamaEndpoint);
+
+                    // ask without giving a context
+                    var completionRequest = new GenerateCompletionRequest();
+                    completionRequest.Stream = false;
+                    completionRequest.Prompt = _question;
+                    completionRequest.Model = "llama3";
+
+                    var completionResponse = await ollama.GetCompletion(completionRequest);
+                    _answer = completionResponse.Response;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(ex, ex.Message);
+                }
             }
         }
     }

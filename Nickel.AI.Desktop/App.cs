@@ -43,6 +43,7 @@ namespace Nickel.AI.Desktop
             SetupPanels();
 
             UI.UiManager.Setup();
+            Raylib.SetExitKey(0);
 
             while (!Raylib.WindowShouldClose() && !UI.UiManager.Quit)
             {

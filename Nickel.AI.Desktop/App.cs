@@ -114,6 +114,15 @@ namespace Nickel.AI.Desktop
             logPanel.DefaultWindowSize.Y = 300;
 
             UI.UiManager.Panels.Add(logPanel);
+
+            var nodePanel = Host.Services.GetRequiredService<ExampleNodePanel>();
+            nodePanel.Label = "ImNodes Panel";
+            nodePanel.MenuCategory = "Examples";
+            nodePanel.DefaultWindowSize.X = 800;
+            nodePanel.DefaultWindowSize.Y = 600;
+            nodePanel.HasMenuBar = true;
+
+            UI.UiManager.Panels.Add(nodePanel);
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

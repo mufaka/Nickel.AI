@@ -9,9 +9,12 @@
 *
 *   Copyright (c) 2021 Jeffery Myers
 *
+*   NOTE: This has been modified to use a different version of ImGui .NET bindings 
+*         (Hexa.NET.ImGui) but a majority of this code is the same as the orginal.
 ********************************************************************************************/
 
 using Hexa.NET.ImGui;
+using Hexa.NET.ImNodes;
 using Raylib_cs;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -21,6 +24,7 @@ namespace rlImGui_cs
     public static class rlImGui
     {
         internal static ImGuiContextPtr ImGuiContext;
+        internal static ImNodesContextPtr ImNodesContext;
 
         private static ImGuiMouseCursor CurrentMouseCursor = ImGuiMouseCursor.Count;
         private static Dictionary<ImGuiMouseCursor, MouseCursor> MouseCursorMap = new Dictionary<ImGuiMouseCursor, MouseCursor>();
@@ -490,6 +494,10 @@ namespace rlImGui_cs
         public static void Begin(float dt = -1)
         {
             ImGui.SetCurrentContext(ImGuiContext);
+            ImNodes.SetImGuiContext(ImGuiContext);
+
+            ImNodesContext = ImNodes.CreateContext();
+            ImNodes.SetCurrentContext(ImNodesContext);
 
             NewFrame(dt);
             FrameEvents();

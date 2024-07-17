@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.90.9.1" />
+    <PackageReference Include="Hexa.NET.ImGui" Version="1.0.4" />
+    <PackageReference Include="Hexa.NET.ImNodes" Version="1.0.4" />
+    <PackageReference Include="Hexa.NET.ImPlot" Version="1.0.4" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.22.0-preview.24271.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.6.24327.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.6.24327.7" />

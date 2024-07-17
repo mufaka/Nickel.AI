@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+﻿using Hexa.NET.ImGui;
 using System.Numerics;
 
 namespace Nickel.AI.Desktop.UI
@@ -188,7 +188,7 @@ namespace Nickel.AI.Desktop.UI
         public static void SetStyleDarcula()
         {
             // Darcula styleice1000 from ImThemes
-            var style = ImGuiNET.ImGui.GetStyle();
+            var style = ImGui.GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -279,7 +279,7 @@ namespace Nickel.AI.Desktop.UI
         public static void SetStyleDarkRuda()
         {
             // Dark Ruda styleRaikiri from ImThemes
-            var style = ImGuiNET.ImGui.GetStyle();
+            var style = ImGui.GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -370,7 +370,7 @@ namespace Nickel.AI.Desktop.UI
         public static void SetStyleLight()
         {
             // Light styledougbinks from ImThemes
-            var style = ImGuiNET.ImGui.GetStyle();
+            var style = ImGui.GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -461,7 +461,7 @@ namespace Nickel.AI.Desktop.UI
         public static void SetStyleMaterialFlat()
         {
             // Material Flat styleImJC1C from ImThemes
-            var style = ImGuiNET.ImGui.GetStyle();
+            var style = ImGui.GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.5f;
@@ -552,7 +552,7 @@ namespace Nickel.AI.Desktop.UI
         public static void SetStyleMoonlight()
         {
             // Moonlight styleMadam-Herta from ImThemes
-            var style = ImGuiNET.ImGui.GetStyle();
+            var style = ImGui.GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 1.0f;

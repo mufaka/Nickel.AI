@@ -1,8 +1,6 @@
-﻿using ImGuiNET;
+﻿using Hexa.NET.ImGui;
 using Nickel.AI.Desktop.Models;
 using System.Numerics;
-
-
 
 namespace Nickel.AI.Desktop.UI.Modals
 {
@@ -27,7 +25,8 @@ namespace Nickel.AI.Desktop.UI.Modals
             {
                 ImGui.OpenPopup(dialogLabel);
 
-                var center = ImGui.GetMainViewport().GetCenter();
+                //var center = ImGui.GetMainViewport().GetCenter();
+                var center = ImGui.GetWorkCenter(ImGui.GetMainViewport());
                 ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
                 ImGui.SetNextWindowSize(new Vector2(800, 400));
             }

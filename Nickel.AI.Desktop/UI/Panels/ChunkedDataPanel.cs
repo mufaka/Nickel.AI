@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+﻿using Hexa.NET.ImGui;
 using Microsoft.Extensions.Logging;
 using Nickel.AI.Data;
 using Nickel.AI.Desktop.Models;
@@ -167,7 +167,7 @@ namespace Nickel.AI.Desktop.UI.Panels
 
                     ImGui.OpenPopup("Testing Menu Click Dialog");
 
-                    var center = ImGui.GetMainViewport().GetCenter();
+                    var center = ImGui.GetWorkCenter(ImGui.GetMainViewport());
                     ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
                     ImGui.SetNextWindowSize(new Vector2(800, 400));
                 }

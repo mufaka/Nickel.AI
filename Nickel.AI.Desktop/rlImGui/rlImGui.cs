@@ -92,6 +92,8 @@ namespace rlImGui_cs
             SetupKeymap();
 
             ImGuiContext = ImGui.CreateContext();
+            ImNodesContext = ImNodes.CreateContext();
+            ImPlotContext = ImPlot.CreateContext();
         }
 
         internal static void SetupKeymap()
@@ -499,10 +501,7 @@ namespace rlImGui_cs
             ImNodes.SetImGuiContext(ImGuiContext);
             ImPlot.SetImGuiContext(ImGuiContext);
 
-            ImNodesContext = ImNodes.CreateContext();
             ImNodes.SetCurrentContext(ImNodesContext);
-
-            ImPlotContext = ImPlot.CreateContext();
             ImPlot.SetCurrentContext(ImPlotContext);
 
             NewFrame(dt);

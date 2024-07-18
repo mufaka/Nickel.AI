@@ -12,7 +12,6 @@ namespace Nickel.AI.Desktop.Settings
         private static ApplicationSettings? _applicationSettings = null;
         private static List<DataProject> _dataProjects = new List<DataProject>();
 
-
         private static void InitializeSettingsDirectory()
         {
             if (!Directory.Exists(SETTINGS_ROOT))

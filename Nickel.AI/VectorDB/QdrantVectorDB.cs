@@ -82,6 +82,13 @@ namespace Nickel.AI.VectorDB
             return pointStructs;
         }
 
+        public async Task<List<string>> ListCollections()
+        {
+            var client = GetClient();
+            var readOnlyList = await client.ListCollectionsAsync();
+            return readOnlyList == null ? new List<string>() : [.. readOnlyList];
+        }
+
         public async Task<bool> CollectionExists(string name)
         {
             var client = GetClient();

@@ -13,8 +13,11 @@ namespace Nickel.AI.Desktop
         private readonly ILogger _logger;
 
         // NOTE: Note sure if this is the best way to do this but "cheating"
-        //       to avoid a major refactor...
-        public static IHost Host { get; set; }
+        //       to avoid a major refactor... need the Host to get the services
+        //       in order to instantiate through DI.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        public static IHost Host { get; set; } // This is set in Program.cs as part of the startup. It won't be null, otherwise app will crash on startup.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         public App(ILogger<App> logger)
         {
@@ -133,6 +136,14 @@ namespace Nickel.AI.Desktop
 
             UI.UiManager.Panels.Add(plotPanel);
 
+            var vectorPanel = Host.Services.GetRequiredService<VectorDbPanel>();
+            vectorPanel.Label = "Vector DB Browser";
+            vectorPanel.MenuCategory = "Vector DB";
+            vectorPanel.DefaultWindowSize.X = 600;
+            vectorPanel.DefaultWindowSize.Y = 400;
+            vectorPanel.HasMenuBar = true;
+
+            UI.UiManager.Panels.Add(vectorPanel);
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

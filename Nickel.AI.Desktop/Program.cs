@@ -31,6 +31,7 @@ namespace Nickel.AI.Desktop
                     services.AddSingleton<TextExtractionPanel>();
                     services.AddSingleton<ChunkedDataPanel>();
                     services.AddSingleton<ExampleNodePanel>();
+                    services.AddSingleton<ExamplePlotPanel>();
                 }).Build();
 
             var app = host.Services.GetRequiredService<App>();

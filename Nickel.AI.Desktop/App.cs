@@ -123,6 +123,16 @@ namespace Nickel.AI.Desktop
             nodePanel.HasMenuBar = true;
 
             UI.UiManager.Panels.Add(nodePanel);
+
+            var plotPanel = Host.Services.GetRequiredService<ExamplePlotPanel>();
+            plotPanel.Label = "ImPlot Panel";
+            plotPanel.MenuCategory = "Examples";
+            plotPanel.DefaultWindowSize.X = 600;
+            plotPanel.DefaultWindowSize.Y = 400;
+            plotPanel.HasMenuBar = true;
+
+            UI.UiManager.Panels.Add(plotPanel);
+
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

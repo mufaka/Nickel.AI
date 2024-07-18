@@ -15,6 +15,7 @@
 
 using Hexa.NET.ImGui;
 using Hexa.NET.ImNodes;
+using Hexa.NET.ImPlot;
 using Raylib_cs;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -25,6 +26,7 @@ namespace rlImGui_cs
     {
         internal static ImGuiContextPtr ImGuiContext;
         internal static ImNodesContextPtr ImNodesContext;
+        internal static ImPlotContextPtr ImPlotContext;
 
         private static ImGuiMouseCursor CurrentMouseCursor = ImGuiMouseCursor.Count;
         private static Dictionary<ImGuiMouseCursor, MouseCursor> MouseCursorMap = new Dictionary<ImGuiMouseCursor, MouseCursor>();
@@ -495,9 +497,13 @@ namespace rlImGui_cs
         {
             ImGui.SetCurrentContext(ImGuiContext);
             ImNodes.SetImGuiContext(ImGuiContext);
+            ImPlot.SetImGuiContext(ImGuiContext);
 
             ImNodesContext = ImNodes.CreateContext();
             ImNodes.SetCurrentContext(ImNodesContext);
+
+            ImPlotContext = ImPlot.CreateContext();
+            ImPlot.SetCurrentContext(ImPlotContext);
 
             NewFrame(dt);
             FrameEvents();

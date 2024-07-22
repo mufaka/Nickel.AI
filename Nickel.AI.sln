@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nickel.AI.Desktop", "Nickel
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HuggingFaceWalkthrough", "HuggingFaceWalkthrough\HuggingFaceWalkthrough.pyproj", "{014584C1-1E10-4F52-88E1-37200196E392}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nickel.AI.OnnxPOC", "Examples\Nickel.AI.OnnxPOC\Nickel.AI.OnnxPOC.csproj", "{37A92947-5B04-4BE1-94F3-74BC0ADEAF5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{034D5C7A-4A92-4D46-8C40-9E4C59BBB4C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{014584C1-1E10-4F52-88E1-37200196E392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{014584C1-1E10-4F52-88E1-37200196E392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37A92947-5B04-4BE1-94F3-74BC0ADEAF5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37A92947-5B04-4BE1-94F3-74BC0ADEAF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37A92947-5B04-4BE1-94F3-74BC0ADEAF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37A92947-5B04-4BE1-94F3-74BC0ADEAF5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

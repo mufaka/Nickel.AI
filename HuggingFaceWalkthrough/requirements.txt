@@ -1,0 +1,11 @@
+transformers
+datasets
+evaluate
+accelerate
+torch
+tensorflow
+tf_keras
+onnx
+onnxscript
+optimum[exporters]
+huggingface_hub[hf_transfer]

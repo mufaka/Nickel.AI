@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>HuggingFaceWalkthrough</Name>
     <RootNamespace>HuggingFaceWalkthrough</RootNamespace>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

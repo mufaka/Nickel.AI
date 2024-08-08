@@ -61,17 +61,22 @@ namespace Nickel.AI.Desktop.UI.Panels
             float characterWidth = ImGui.CalcTextSize("#").X;
 
 
-            ImGui.SetCursorPos(new Vector2(20, 40));
-            ImGui.PushItemWidth(windowWidth - 120);
-            ImGui.PushID("chat_question");
+            //ImGui.SetCursorPos(new Vector2(20, 40));
+            //ImGui.PushItemWidth(windowWidth - 120);
+            //ImGui.PushID("chat_question");
+            /*
             if (ImGui.InputText("", ref _question, 256, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 AskOllama();
             }
-            ImGui.PopID();
-            ImGui.PopItemWidth();
+            */
+            var promptHeight = ImGui.GetTextLineHeight() * 16;
+            ImGui.InputTextMultiline("##chat_prompt", ref _question, 2048, new Vector2(windowWidth - 40.0f, promptHeight));
+            //ImGui.PopID();
+            //ImGui.PopItemWidth();
 
-            ImGui.SetCursorPos(new Vector2(windowWidth - 80, 40));
+            //ImGui.SetCursorPos(new Vector2(windowWidth - 80, ImGui.GetTextLineHeight() * 17));
+            //ImGui.NewLine();
 
             // NOTE: This will return true if the button was clicked ...
             if (ImGui.Button("Ask"))
@@ -82,14 +87,14 @@ namespace Nickel.AI.Desktop.UI.Panels
             // TODO: Sizing? Border? Word wrap?
             if (!string.IsNullOrEmpty(_answer))
             {
-                ImGui.SetCursorPos(new Vector2(20, 80));
+                //ImGui.SetCursorPos(new Vector2(20, 80));
 
                 var wordWrappedAnswer = TextUtilities.WordWrap(_answer, characterWidth, windowWidth - 45.0f);
 
                 ImGui.PushID("chat_answer");
                 uint bufferLength = Math.Max((uint)wordWrappedAnswer.Length, 4096);
 
-                ImGui.InputTextMultiline("##ans", ref wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - 100.0f));
+                ImGui.InputTextMultiline("##ans", ref wordWrappedAnswer, bufferLength, new Vector2(windowWidth - 40.0f, windowHeight - (promptHeight + 100.0f)));
 
                 ImGui.PopID();
             }
@@ -128,8 +133,8 @@ namespace Nickel.AI.Desktop.UI.Panels
 
                     if (String.IsNullOrWhiteSpace(model))
                     {
-                        _logger.LogInformation("Ollama model is not configured. Using \"llama3\" as a default.");
-                        model = "llama3";
+                        _logger.LogInformation("Ollama model is not configured. Using \"llama3.1\" as a default.");
+                        model = "llama3.1";
                     }
 
                     completionRequest.Model = model;

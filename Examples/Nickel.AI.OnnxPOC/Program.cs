@@ -1,4 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
+using Newtonsoft.Json;
+using Python.Runtime;
 
 namespace Nickel.AI.OnnxPOC
 {
@@ -6,6 +8,19 @@ namespace Nickel.AI.OnnxPOC
     {
         static void Main(string[] args)
         {
+            // let's get hacky
+            Runtime.PythonDLL = "python312.dll";
+            PythonEngine.Initialize();
+
+            // NOTE: Global Interpreter Lock; needs to be managed carefully so how can we
+            //       safely provide static bindings?
+            using (Py.GIL())
+            {
+                // how do we import a class from a module?
+
+            }
+
+            return;
             var modelPath = @"E:\Models\bart-large-cnn-onnx\model.onnx";
 
             // How do we know the inputs/outputs? Netron. Click on input_ids node and Model Properties appear
@@ -84,9 +99,8 @@ namespace Nickel.AI.OnnxPOC
             var pretrainedConfig = PretrainedConfig.FromFile(configPath);
 
             Console.WriteLine("Configuration");
-            Console.WriteLine($"\tName or Path: {pretrainedConfig.NameOrPath}");
+            Console.WriteLine(JsonConvert.SerializeObject(pretrainedConfig, Formatting.Indented));
         }
-
 
 
         /// <summary>

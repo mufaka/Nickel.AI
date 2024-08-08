@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Cuda" Version="0.3.0" />
     <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.DirectML" Version="0.3.0" />
     <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="4.0.0-preview.24271.1" />
+    <PackageReference Include="pythonnet" Version="3.1.0-preview2024-07-03" />
   </ItemGroup>
 
 </Project>

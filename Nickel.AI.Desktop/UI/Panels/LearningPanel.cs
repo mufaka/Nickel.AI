@@ -36,25 +36,61 @@ namespace Nickel.AI.Desktop.UI.Panels
 
             if (_cards.Cards.Count > 0)
             {
-                if (ImGui.BeginTable("cardtable", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg))
+                if (ImGui.BeginTabBar("#cards"))
                 {
-                    ImGui.TableSetupColumn("Question");
-                    ImGui.TableSetupColumn("Answer");
-                    ImGui.TableHeadersRow();
-
-                    foreach (var card in _cards.Cards)
+                    if (ImGui.BeginTabItem("Questions"))
                     {
-                        ImGui.TableNextRow();
-                        ImGui.TableSetColumnIndex(0);
-                        ImGui.TextWrapped(card.Question);
-
-                        ImGui.TableSetColumnIndex(1);
-                        ImGui.TextWrapped(card.Answer);
+                        RenderQuestions();
+                        ImGui.EndTabItem();
                     }
 
-                    ImGui.EndTable();
+                    if (ImGui.BeginTabItem("Cards"))
+                    {
+                        RenderCards();
+                        ImGui.EndTabItem();
+                    }
+
+                    ImGui.EndTabBar();
                 }
             }
+        }
+
+        private void RenderQuestions()
+        {
+            if (ImGui.BeginTable("cardtable", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.Resizable))
+            {
+                ImGui.TableSetupColumn("Question", ImGuiTableColumnFlags.WidthFixed, 400.0f);
+                ImGui.TableSetupColumn("Answer", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("Detail", ImGuiTableColumnFlags.WidthFixed, 100.0f);
+                ImGui.TableHeadersRow();
+
+                int buttonIdx = 0;
+                foreach (var card in _cards.Cards)
+                {
+                    ImGui.TableNextRow();
+                    ImGui.TableSetColumnIndex(0);
+                    ImGui.TextWrapped(card.Question);
+
+                    ImGui.TableSetColumnIndex(1);
+                    ImGui.TextWrapped(card.Answer);
+
+                    ImGui.TableSetColumnIndex(2);
+                    ImGui.PushID(buttonIdx);
+                    if (ImGui.Button("More"))
+                    {
+                        MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
+                    }
+
+                    buttonIdx++;
+                }
+
+                ImGui.EndTable();
+            }
+        }
+
+        private void RenderCards()
+        {
+            ImGui.TextWrapped("YOU SHOULD REALLY THINK ABOUT SAVING THE DATA");
         }
 
         private async void CreateCards()

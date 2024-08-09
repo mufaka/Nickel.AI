@@ -13,7 +13,8 @@ namespace Nickel.AI.Desktop.UI.Panels
         private FlashCards _cards = new FlashCards();
         private string _subject = string.Empty;
         private string _topic = string.Empty;
-        private int _selectedCardIndex = -1;
+        private int _selectedCardIndex = 0;
+        private int _cardSide = 0;
 
 
         public LearningPanel(ILogger<LearningPanel> logger)
@@ -27,31 +28,43 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         public override void DoRender()
         {
-            ImGui.InputText("Subject", ref _subject, 256, ImGuiInputTextFlags.None);
-            ImGui.InputText("Topic", ref _topic, 256, ImGuiInputTextFlags.None);
-            if (ImGui.Button("Create Cards"))
+            try
             {
-                CreateCards();
-            }
-
-            if (_cards.Cards.Count > 0)
-            {
-                if (ImGui.BeginTabBar("#cards"))
+                ImGui.InputText("Subject", ref _subject, 256, ImGuiInputTextFlags.None);
+                ImGui.InputText("Topic", ref _topic, 256, ImGuiInputTextFlags.None);
+                if (ImGui.Button("Create Cards"))
                 {
-                    if (ImGui.BeginTabItem("Questions"))
+                    if (!String.IsNullOrWhiteSpace(_subject) && !String.IsNullOrWhiteSpace(_topic))
                     {
-                        RenderQuestions();
-                        ImGui.EndTabItem();
+                        _selectedCardIndex = 0;
+                        _cardSide = 0;
+                        CreateCards();
                     }
-
-                    if (ImGui.BeginTabItem("Cards"))
-                    {
-                        RenderCards();
-                        ImGui.EndTabItem();
-                    }
-
-                    ImGui.EndTabBar();
                 }
+
+                if (_cards.Cards.Count > 0)
+                {
+                    if (ImGui.BeginTabBar("CardTabBar", ImGuiTabBarFlags.None))
+                    {
+                        if (ImGui.BeginTabItem("Questions"))
+                        {
+                            RenderQuestions();
+                            ImGui.EndTabItem();
+                        }
+
+                        if (ImGui.BeginTabItem("Cards"))
+                        {
+                            RenderCards();
+                            ImGui.EndTabItem();
+                        }
+
+                        ImGui.EndTabBar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
         }
 
@@ -80,6 +93,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                     {
                         MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
                     }
+                    ImGui.PopID();
 
                     buttonIdx++;
                 }
@@ -90,7 +104,47 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         private void RenderCards()
         {
-            ImGui.TextWrapped("YOU SHOULD REALLY THINK ABOUT SAVING THE DATA");
+            // TODO: Integrate with Mochi, key has to be in settings file and NOT in source code (or control)
+            var availableSize = ImGui.GetContentRegionAvail();
+            var card = _cards.Cards[_selectedCardIndex];
+            var cardLabel = _cardSide == 0 ? card.Question : card.Answer;
+
+            if (ImGui.Button(cardLabel, new System.Numerics.Vector2(availableSize.X, 300.0f)))
+            {
+                // flip card
+                _cardSide = _cardSide == 0 ? 1 : 0;
+            }
+
+            if (ImGui.Button("Previous"))
+            {
+                _selectedCardIndex--;
+                _cardSide = 0;
+
+                if (_selectedCardIndex < 0)
+                {
+                    _selectedCardIndex = _cards.Cards.Count - 1;
+                }
+            }
+
+            ImGui.SameLine();
+
+            if (ImGui.Button("Next"))
+            {
+                _selectedCardIndex++;
+                _cardSide = 0;
+
+                if (_selectedCardIndex > _cards.Cards.Count - 1)
+                {
+                    _selectedCardIndex = 0;
+                }
+            }
+
+            ImGui.SameLine();
+
+            if (ImGui.Button("Detail"))
+            {
+                MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
+            }
         }
 
         private async void CreateCards()

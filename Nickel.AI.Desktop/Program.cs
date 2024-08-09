@@ -33,6 +33,7 @@ namespace Nickel.AI.Desktop
                     services.AddSingleton<ExampleNodePanel>();
                     services.AddSingleton<ExamplePlotPanel>();
                     services.AddSingleton<VectorDbPanel>();
+                    services.AddSingleton<LearningPanel>();
                 }).Build();
 
             var app = host.Services.GetRequiredService<App>();

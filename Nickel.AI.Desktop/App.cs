@@ -144,6 +144,16 @@ namespace Nickel.AI.Desktop
             vectorPanel.HasMenuBar = true;
 
             UI.UiManager.Panels.Add(vectorPanel);
+
+            var learningPanel = Host.Services.GetRequiredService<LearningPanel>();
+            learningPanel.Label = "AIded Learning";
+            learningPanel.MenuCategory = "Learn";
+            learningPanel.DefaultWindowSize.X = 800;
+            learningPanel.DefaultWindowSize.Y = 600;
+            learningPanel.HasMenuBar = false;
+
+            UI.UiManager.Panels.Add(learningPanel);
+
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

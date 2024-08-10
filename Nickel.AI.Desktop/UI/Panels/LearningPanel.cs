@@ -126,48 +126,111 @@ namespace Nickel.AI.Desktop.UI.Panels
             }
         }
 
+        private void NextCard()
+        {
+            int newIndex = _selectedCardIndex;
+
+            while (true)
+            {
+                newIndex--;
+
+                if (newIndex < 0)
+                {
+                    newIndex = _cards.Cards.Count - 1;
+                }
+
+                if (!_cards.Cards[newIndex].Know)
+                {
+                    _selectedCardIndex = newIndex;
+                }
+
+                if (newIndex == _selectedCardIndex)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void PreviousCard()
+        {
+            int newIndex = _selectedCardIndex;
+
+            while (true)
+            {
+                newIndex++;
+
+                if (newIndex >= _cards.Cards.Count)
+                {
+                    newIndex = 0;
+                }
+
+                if (!_cards.Cards[newIndex].Know)
+                {
+                    _cardSide = 0;
+                    _selectedCardIndex = newIndex;
+                }
+
+                if (newIndex == _selectedCardIndex)
+                {
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Card Stats
+        /// </summary>
+        /// <returns>know, total</returns>
+        private (int, int) GetCardStats()
+        {
+            return (_cards.Cards.Where(c => c.Know).Count(), _cards.Cards.Count);
+        }
+
         private void RenderCards()
         {
-            var availableSize = ImGui.GetContentRegionAvail();
-            var card = _cards.Cards[_selectedCardIndex];
-            var cardLabel = _cardSide == 0 ? card.Question : card.Answer;
-
-            if (ImGui.Button(cardLabel, new System.Numerics.Vector2(availableSize.X, 300.0f)))
+            if (_selectedCardIndex >= 0)
             {
-                // flip card
-                _cardSide = _cardSide == 0 ? 1 : 0;
-            }
+                var availableSize = ImGui.GetContentRegionAvail();
+                var card = _cards.Cards[_selectedCardIndex];
+                var cardLabel = _cardSide == 0 ? card.Question : card.Answer;
 
-            if (ImGui.Button("Previous"))
-            {
-                _selectedCardIndex--;
-                _cardSide = 0;
-
-                if (_selectedCardIndex < 0)
+                if (ImGui.Button(cardLabel, new System.Numerics.Vector2(availableSize.X, 300.0f)))
                 {
-                    _selectedCardIndex = _cards.Cards.Count - 1;
+                    // flip card
+                    _cardSide = _cardSide == 0 ? 1 : 0;
+                }
+
+                if (ImGui.Button("Previous"))
+                {
+                    PreviousCard();
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.Button("Know"))
+                {
+                    card.Know = true;
+                    NextCard();
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.Button("Next"))
+                {
+                    NextCard();
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.Button("Detail"))
+                {
+                    MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
                 }
             }
 
-            ImGui.SameLine();
+            var stats = GetCardStats();
 
-            if (ImGui.Button("Next"))
-            {
-                _selectedCardIndex++;
-                _cardSide = 0;
-
-                if (_selectedCardIndex > _cards.Cards.Count - 1)
-                {
-                    _selectedCardIndex = 0;
-                }
-            }
-
-            ImGui.SameLine();
-
-            if (ImGui.Button("Detail"))
-            {
-                MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
-            }
+            ImGui.Text($"You know {stats.Item1} of {stats.Item2} facts.");
         }
 
         private void RenderMochiIntegration()

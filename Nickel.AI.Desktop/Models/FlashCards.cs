@@ -57,5 +57,7 @@ namespace Nickel.AI.Desktop.Models
 
         [JsonProperty("detail")]
         public string Detail { get; set; } = String.Empty;
+
+        public bool Know { get; set; } = false;
     }
 }

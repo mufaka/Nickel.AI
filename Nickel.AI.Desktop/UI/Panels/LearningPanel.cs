@@ -22,6 +22,7 @@ namespace Nickel.AI.Desktop.UI.Panels
         private List<MochiDeck>? _decks;
         private MochiDeck? _selectedDeck;
         private bool _fetchingDecks = false;
+        private string _deckName = string.Empty;
 
         public LearningPanel(ILogger<LearningPanel> logger)
         {
@@ -54,6 +55,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                     {
                         _selectedCardIndex = 0;
                         _cardSide = 0;
+                        _fetchingDecks = false;
                         CreateCards();
                     }
                 }
@@ -201,6 +203,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                 }
                 else
                 {
+                    // TODO: allow for creation when no decks are present in Mochi
                     if (_decks.Count > 0 && _selectedDeck != null)
                     {
                         if (ImGui.BeginCombo("Parent Deck", _selectedDeck.Name, ImGuiComboFlags.WidthFitPreview))
@@ -222,8 +225,57 @@ namespace Nickel.AI.Desktop.UI.Panels
 
                             ImGui.EndCombo();
                         }
+
+                        ImGui.InputText("Deck Name", ref _deckName, 100, ImGuiInputTextFlags.None);
+
+                        if (!String.IsNullOrWhiteSpace(_deckName))
+                        {
+                            if (ImGui.Button("Upload Cards"))
+                            {
+                                UploadCards(_deckName);
+                                _deckName = string.Empty;
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        private bool DeckAlreadyExists(string name)
+        {
+            var existing = _decks.Where(d => d.Name == name).FirstOrDefault();
+            return existing != null;
+        }
+
+        private async void UploadCards(string deckName)
+        {
+            try
+            {
+                var mochiClient = new MochiClient(SettingsManager.ApplicationSettings.Mochi.ApiKey);
+
+                // TODO: allow for uploading to same deck by not importing
+                //       duplicate questions
+                if (!DeckAlreadyExists(deckName))
+                {
+                    var deck = new MochiDeck();
+                    deck.Name = _deckName;
+                    deck.ParentId = _selectedDeck!.Id;
+
+                    deck = await mochiClient.CreateDeck(deck);
+
+                    foreach (Card card in _cards.Cards)
+                    {
+                        var mochiCard = new MochiCard();
+                        mochiCard.Content = $"{card.Question}\n---\n{card.Answer}";
+                        mochiCard.DeckId = deck.Id;
+
+                        await mochiClient.CreateCard(mochiCard);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
         }
 

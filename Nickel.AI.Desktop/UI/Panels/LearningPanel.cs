@@ -1,5 +1,6 @@
 ﻿using Hexa.NET.ImGui;
 using Microsoft.Extensions.Logging;
+using Nickel.AI.Desktop.External.Mochi;
 using Nickel.AI.Desktop.Models;
 using Nickel.AI.Desktop.Settings;
 using OllamaSharp;
@@ -15,17 +16,25 @@ namespace Nickel.AI.Desktop.UI.Panels
         private string _topic = string.Empty;
         private int _selectedCardIndex = 0;
         private int _cardSide = 0;
-        private string _mochiKey = string.Empty;
 
+        private string _mochiKey = string.Empty;
+        private MochiClient? _mochiClient;
+        private List<MochiDeck>? _decks;
+        private MochiDeck? _selectedDeck;
+        private bool _fetchingDecks = false;
 
         public LearningPanel(ILogger<LearningPanel> logger)
         {
             _logger = logger;
             _mochiKey = SettingsManager.ApplicationSettings.Mochi.ApiKey;
 
-            if (_mochiKey == null)
+            if (String.IsNullOrEmpty(_mochiKey))
             {
                 _mochiKey = string.Empty;
+            }
+            else
+            {
+                _mochiClient = new MochiClient(_mochiKey);
             }
         }
 
@@ -167,6 +176,73 @@ namespace Nickel.AI.Desktop.UI.Panels
             {
                 SettingsManager.ApplicationSettings.Mochi.ApiKey = _mochiKey;
                 SettingsManager.SaveAll();
+
+                if (!String.IsNullOrEmpty(_mochiKey))
+                {
+                    _mochiClient = new MochiClient(_mochiKey);
+                    _decks = null;
+                    _selectedDeck = null;
+                    _fetchingDecks = false;
+                }
+            }
+
+            if (_mochiClient != null)
+            {
+                if (_decks == null)
+                {
+                    // NOTE: GetMochiDecks is an async call so this 
+                    //       will get called every frame until decks
+                    //       are populated without the _fetchingDecks check
+                    if (!_fetchingDecks)
+                    {
+                        _fetchingDecks = true;
+                        GetMochiDecks();
+                    }
+                }
+                else
+                {
+                    if (_decks.Count > 0 && _selectedDeck != null)
+                    {
+                        if (ImGui.BeginCombo("Parent Deck", _selectedDeck.Name, ImGuiComboFlags.WidthFitPreview))
+                        {
+                            foreach (MochiDeck deck in _decks)
+                            {
+                                var isSelected = deck.Id == _selectedDeck.Id;
+
+                                if (ImGui.Selectable(deck.Name, isSelected))
+                                {
+                                    _selectedDeck = deck;
+                                }
+
+                                if (isSelected)
+                                {
+                                    ImGui.SetItemDefaultFocus();
+                                }
+                            }
+
+                            ImGui.EndCombo();
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void GetMochiDecks()
+        {
+            try
+            {
+                var mochiClient = new MochiClient(SettingsManager.ApplicationSettings.Mochi.ApiKey);
+                var deckResponse = await mochiClient.GetDeckList();
+                _decks = deckResponse.Decks;
+
+                if (_decks.Count > 0)
+                {
+                    _selectedDeck = _decks[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
         }
 

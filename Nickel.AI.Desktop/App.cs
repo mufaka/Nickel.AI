@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nickel.AI.Desktop.Settings;
 using Nickel.AI.Desktop.UI.Panels;
 using Raylib_cs;
 using System.Reflection;
@@ -64,96 +65,131 @@ namespace Nickel.AI.Desktop
             Raylib.CloseWindow();
         }
 
+        // NOTE: When adding Panels be sure to update the default Panel Mask
+        //       in Settings.
+
         private void SetupPanels()
         {
-            var chatPanel = Host.Services.GetRequiredService<ChatPanel>();
-            chatPanel.Label = "Ollama";
-            chatPanel.MenuCategory = "Chat";
-            chatPanel.DefaultWindowSize.X = 400;
-            chatPanel.DefaultWindowSize.Y = 600;
-            UI.UiManager.Panels.Add(chatPanel);
+            var panelMask = SettingsManager.ApplicationSettings.PanelMask;
 
-            var examplePanel = Host.Services.GetRequiredService<ExamplePanel>();
-            examplePanel.Label = "Test Panel";
-            examplePanel.MenuCategory = "Examples";
-            examplePanel.DefaultWindowSize.X = 700;
-            examplePanel.DefaultWindowSize.Y = 400;
+            if ((panelMask & 1) == 1)
+            {
+                var chatPanel = Host.Services.GetRequiredService<ChatPanel>();
+                chatPanel.Label = "Ollama";
+                chatPanel.MenuCategory = "Chat";
+                chatPanel.DefaultWindowSize.X = 400;
+                chatPanel.DefaultWindowSize.Y = 600;
+                UI.UiManager.Panels.Add(chatPanel);
+            }
 
-            UI.UiManager.Panels.Add(examplePanel);
+            if ((panelMask & 2) == 2)
+            {
+                var examplePanel = Host.Services.GetRequiredService<ExamplePanel>();
+                examplePanel.Label = "Test Panel";
+                examplePanel.MenuCategory = "Examples";
+                examplePanel.DefaultWindowSize.X = 700;
+                examplePanel.DefaultWindowSize.Y = 400;
 
-            var raylibPanel = Host.Services.GetRequiredService<ExampleRaylibPanel>();
-            raylibPanel.Label = "Raylib drawn inside ImGUI";
-            raylibPanel.MenuCategory = "Examples";
-            raylibPanel.DefaultWindowSize.X = 400;
-            raylibPanel.DefaultWindowSize.Y = 400;
+                UI.UiManager.Panels.Add(examplePanel);
+            }
 
-            // TODO: Refactor this. It's required for setting up a camera, etc, in 
-            //       a manner that won't run every frame. 
-            raylibPanel.Setup();
+            if ((panelMask & 4) == 4)
+            {
+                var raylibPanel = Host.Services.GetRequiredService<ExampleRaylibPanel>();
+                raylibPanel.Label = "Raylib drawn inside ImGUI";
+                raylibPanel.MenuCategory = "Examples";
+                raylibPanel.DefaultWindowSize.X = 400;
+                raylibPanel.DefaultWindowSize.Y = 400;
 
-            UI.UiManager.Panels.Add(raylibPanel);
+                // TODO: Refactor this. It's required for setting up a camera, etc, in 
+                //       a manner that won't run every frame. 
+                raylibPanel.Setup();
 
-            var textExtractionPanel = Host.Services.GetRequiredService<TextExtractionPanel>();
-            textExtractionPanel.Label = "Text Extraction";
-            textExtractionPanel.MenuCategory = "Text";
-            textExtractionPanel.DefaultWindowSize.X = 800;
-            textExtractionPanel.DefaultWindowSize.Y = 600;
+                UI.UiManager.Panels.Add(raylibPanel);
+            }
 
-            UI.UiManager.Panels.Add(textExtractionPanel);
+            if ((panelMask & 8) == 8)
+            {
+                var textExtractionPanel = Host.Services.GetRequiredService<TextExtractionPanel>();
+                textExtractionPanel.Label = "Text Extraction";
+                textExtractionPanel.MenuCategory = "Text";
+                textExtractionPanel.DefaultWindowSize.X = 800;
+                textExtractionPanel.DefaultWindowSize.Y = 600;
 
-            var chunkedDataViewer = Host.Services.GetRequiredService<ChunkedDataPanel>();
-            chunkedDataViewer.Label = "Viewer";
-            chunkedDataViewer.MenuCategory = "Data";
-            chunkedDataViewer.DefaultWindowSize.X = 800;
-            chunkedDataViewer.DefaultWindowSize.Y = 600;
+                UI.UiManager.Panels.Add(textExtractionPanel);
+            }
 
-            UI.UiManager.Panels.Add(chunkedDataViewer);
+            if ((panelMask & 16) == 16)
+            {
+                var chunkedDataViewer = Host.Services.GetRequiredService<ChunkedDataPanel>();
+                chunkedDataViewer.Label = "Viewer";
+                chunkedDataViewer.MenuCategory = "Data";
+                chunkedDataViewer.DefaultWindowSize.X = 800;
+                chunkedDataViewer.DefaultWindowSize.Y = 600;
 
-            // logging panel doesn't get a logger
-            var logPanel = new LogPanel();
-            logPanel.Label = "Log";
-            logPanel.MenuCategory = "Logging";
-            logPanel.DefaultWindowSize.X = 800;
-            logPanel.DefaultWindowSize.Y = 300;
+                UI.UiManager.Panels.Add(chunkedDataViewer);
+            }
 
-            UI.UiManager.Panels.Add(logPanel);
+            if ((panelMask & 1) == 32)
+            {
+                // logging panel doesn't get a logger
+                var logPanel = new LogPanel();
+                logPanel.Label = "Log";
+                logPanel.MenuCategory = "Logging";
+                logPanel.DefaultWindowSize.X = 800;
+                logPanel.DefaultWindowSize.Y = 300;
 
-            var nodePanel = Host.Services.GetRequiredService<ExampleNodePanel>();
-            nodePanel.Label = "ImNodes Panel";
-            nodePanel.MenuCategory = "Examples";
-            nodePanel.DefaultWindowSize.X = 800;
-            nodePanel.DefaultWindowSize.Y = 600;
-            nodePanel.HasMenuBar = true;
+                UI.UiManager.Panels.Add(logPanel);
+            }
 
-            UI.UiManager.Panels.Add(nodePanel);
+            if ((panelMask & 64) == 64)
+            {
+                var nodePanel = Host.Services.GetRequiredService<ExampleNodePanel>();
+                nodePanel.Label = "ImNodes Panel";
+                nodePanel.MenuCategory = "Examples";
+                nodePanel.DefaultWindowSize.X = 800;
+                nodePanel.DefaultWindowSize.Y = 600;
+                nodePanel.HasMenuBar = true;
 
-            var plotPanel = Host.Services.GetRequiredService<ExamplePlotPanel>();
-            plotPanel.Label = "ImPlot Panel";
-            plotPanel.MenuCategory = "Examples";
-            plotPanel.DefaultWindowSize.X = 600;
-            plotPanel.DefaultWindowSize.Y = 400;
-            plotPanel.HasMenuBar = true;
+                UI.UiManager.Panels.Add(nodePanel);
+            }
 
-            UI.UiManager.Panels.Add(plotPanel);
+            if ((panelMask & 128) == 128)
+            {
 
-            var vectorPanel = Host.Services.GetRequiredService<VectorDbPanel>();
-            vectorPanel.Label = "Vector DB Browser";
-            vectorPanel.MenuCategory = "Vector DB";
-            vectorPanel.DefaultWindowSize.X = 600;
-            vectorPanel.DefaultWindowSize.Y = 400;
-            vectorPanel.HasMenuBar = true;
+                var plotPanel = Host.Services.GetRequiredService<ExamplePlotPanel>();
+                plotPanel.Label = "ImPlot Panel";
+                plotPanel.MenuCategory = "Examples";
+                plotPanel.DefaultWindowSize.X = 600;
+                plotPanel.DefaultWindowSize.Y = 400;
+                plotPanel.HasMenuBar = true;
 
-            UI.UiManager.Panels.Add(vectorPanel);
+                UI.UiManager.Panels.Add(plotPanel);
+            }
 
-            var learningPanel = Host.Services.GetRequiredService<LearningPanel>();
-            learningPanel.Label = "AIded Learning";
-            learningPanel.MenuCategory = "Learn";
-            learningPanel.DefaultWindowSize.X = 800;
-            learningPanel.DefaultWindowSize.Y = 600;
-            learningPanel.HasMenuBar = false;
+            if ((panelMask & 256) == 256)
+            {
+                var vectorPanel = Host.Services.GetRequiredService<VectorDbPanel>();
+                vectorPanel.Label = "Vector DB Browser";
+                vectorPanel.MenuCategory = "Vector DB";
+                vectorPanel.DefaultWindowSize.X = 600;
+                vectorPanel.DefaultWindowSize.Y = 400;
+                vectorPanel.HasMenuBar = true;
 
-            UI.UiManager.Panels.Add(learningPanel);
+                UI.UiManager.Panels.Add(vectorPanel);
+            }
 
+            if ((panelMask & 512) == 512)
+            {
+                var learningPanel = Host.Services.GetRequiredService<LearningPanel>();
+                learningPanel.Label = "AIded Learning";
+                learningPanel.MenuCategory = "Learn";
+                learningPanel.DefaultWindowSize.X = 800;
+                learningPanel.DefaultWindowSize.Y = 600;
+                learningPanel.HasMenuBar = false;
+
+                UI.UiManager.Panels.Add(learningPanel);
+            }
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

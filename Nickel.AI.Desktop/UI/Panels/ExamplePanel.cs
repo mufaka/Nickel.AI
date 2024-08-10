@@ -1,6 +1,8 @@
 using Hexa.NET.ImGui;
 using Microsoft.Data.Analysis;
 using Microsoft.Extensions.Logging;
+using Nickel.AI.Desktop.External.Mochi;
+using Nickel.AI.Desktop.Settings;
 using Nickel.AI.Desktop.UI.Controls;
 using Nickel.AI.Desktop.UI.Modals;
 
@@ -46,6 +48,30 @@ public class ExamplePanel : Panel
         if (ImGui.Button("Ask Ollama"))
         {
             MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, "What is a good way to pass messages between ImGui windows?");
+        }
+
+        if (ImGui.Button("Get Mochi Decks"))
+        {
+            GetMochiDecks();
+        }
+
+    }
+
+    private async void GetMochiDecks()
+    {
+        try
+        {
+            var mochiClient = new MochiClient(SettingsManager.ApplicationSettings.Mochi.ApiKey);
+            var deckResponse = await mochiClient.GetDeckList();
+
+            foreach (MochiDeck deck in deckResponse.Decks)
+            {
+                _logger.LogInformation($"Found Mochi Deck: {deck.Name}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
         }
     }
 }

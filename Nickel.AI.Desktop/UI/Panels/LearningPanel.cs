@@ -15,11 +15,18 @@ namespace Nickel.AI.Desktop.UI.Panels
         private string _topic = string.Empty;
         private int _selectedCardIndex = 0;
         private int _cardSide = 0;
+        private string _mochiKey = string.Empty;
 
 
         public LearningPanel(ILogger<LearningPanel> logger)
         {
             _logger = logger;
+            _mochiKey = SettingsManager.ApplicationSettings.Mochi.ApiKey;
+
+            if (_mochiKey == null)
+            {
+                _mochiKey = string.Empty;
+            }
         }
 
         public override void HandleUiMessage(UiMessage message)
@@ -55,6 +62,12 @@ namespace Nickel.AI.Desktop.UI.Panels
                         if (ImGui.BeginTabItem("Cards"))
                         {
                             RenderCards();
+                            ImGui.EndTabItem();
+                        }
+
+                        if (ImGui.BeginTabItem("Mochi"))
+                        {
+                            RenderMochiIntegration();
                             ImGui.EndTabItem();
                         }
 
@@ -104,7 +117,6 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         private void RenderCards()
         {
-            // TODO: Integrate with Mochi, key has to be in settings file and NOT in source code (or control)
             var availableSize = ImGui.GetContentRegionAvail();
             var card = _cards.Cards[_selectedCardIndex];
             var cardLabel = _cardSide == 0 ? card.Question : card.Answer;
@@ -144,6 +156,17 @@ namespace Nickel.AI.Desktop.UI.Panels
             if (ImGui.Button("Detail"))
             {
                 MessageQueue.Instance.Enqueue(UiMessageConstants.CHAT_ASK_QUESTION, card.Question);
+            }
+        }
+
+        private void RenderMochiIntegration()
+        {
+            ImGui.InputText("Mochi API Key", ref _mochiKey, 100, ImGuiInputTextFlags.Password);
+            ImGui.SameLine();
+            if (ImGui.Button("Save Key"))
+            {
+                SettingsManager.ApplicationSettings.Mochi.ApiKey = _mochiKey;
+                SettingsManager.SaveAll();
             }
         }
 

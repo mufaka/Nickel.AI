@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.6.24327.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.6.24327.7" />
     <PackageReference Include="Raylib-cs" Version="6.1.1" />
+    <PackageReference Include="RestSharp" Version="111.4.1" />
   </ItemGroup>
 
   <ItemGroup>

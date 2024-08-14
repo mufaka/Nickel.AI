@@ -190,6 +190,17 @@ namespace Nickel.AI.Desktop
 
                 UI.UiManager.Panels.Add(learningPanel);
             }
+
+            if ((panelMask & 1024) == 1024)
+            {
+                var plotPanel = Host.Services.GetRequiredService<PlotPanel>();
+                plotPanel.Label = "Plot Test";
+                plotPanel.MenuCategory = "Examples";
+                plotPanel.DefaultWindowSize = new System.Numerics.Vector2(800, 600);
+                plotPanel.HasMenuBar = false;
+
+                UI.UiManager.Panels.Add(plotPanel);
+            }
         }
 
         // NOTE: DataFrame type inference is minimal and it doesn't allow for injecting/using your

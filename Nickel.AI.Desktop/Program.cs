@@ -35,6 +35,7 @@ namespace Nickel.AI.Desktop
                     services.AddSingleton<VectorDbPanel>();
                     services.AddSingleton<LearningPanel>();
                     services.AddSingleton<PlotPanel>();
+                    services.AddSingleton<ExampleOpenCVPanel>();
                 }).Build();
 
             var app = host.Services.GetRequiredService<App>();

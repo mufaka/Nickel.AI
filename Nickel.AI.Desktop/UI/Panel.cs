@@ -20,6 +20,7 @@ public abstract class Panel
     public void Detach()
     {
         Open = false;
+        DoDetach();
     }
 
     public void Render()
@@ -38,6 +39,7 @@ public abstract class Panel
             DoRender();
             ImGui.End();
         }
+
         if (!isOpen) Detach();
     }
 
@@ -49,5 +51,11 @@ public abstract class Panel
 
     // called for rendering
     public abstract void DoRender();
+
+    // called for suspending panel, eg: pausing background tasks
+    public virtual void DoDetach()
+    {
+
+    }
 
 }

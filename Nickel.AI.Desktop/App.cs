@@ -130,7 +130,7 @@ namespace Nickel.AI.Desktop
                 UI.UiManager.Panels.Add(chunkedDataViewer);
             }
 
-            if ((panelMask & 1) == 32)
+            if ((panelMask & 32) == 32)
             {
                 // logging panel doesn't get a logger
                 var logPanel = new LogPanel();
@@ -200,6 +200,17 @@ namespace Nickel.AI.Desktop
                 plotPanel.HasMenuBar = false;
 
                 UI.UiManager.Panels.Add(plotPanel);
+            }
+
+            if ((panelMask & 2048) == 2048)
+            {
+                var openCVPanel = Host.Services.GetRequiredService<ExampleOpenCVPanel>();
+                openCVPanel.Label = "Web Cam Test";
+                openCVPanel.MenuCategory = "Examples";
+                openCVPanel.DefaultWindowSize = new System.Numerics.Vector2(600, 400);
+                openCVPanel.HasMenuBar = false;
+
+                UI.UiManager.Panels.Add(openCVPanel);
             }
         }
 

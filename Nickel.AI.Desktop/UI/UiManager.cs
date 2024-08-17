@@ -8,7 +8,9 @@ namespace Nickel.AI.Desktop.UI;
 public static class UiManager
 {
     public static List<Panel> Panels { get; set; } = new();
+
     public static bool Quit = false;
+
     public static ApplicationSettings ApplicationSettings = SettingsManager.ApplicationSettings;
 
     public static void Setup()

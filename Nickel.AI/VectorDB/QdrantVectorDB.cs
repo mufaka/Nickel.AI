@@ -95,16 +95,18 @@ namespace Nickel.AI.VectorDB
             return await client.CollectionExistsAsync(name);
         }
 
-        public async void CreateCollection(string name, ulong size, DistanceType distanceType)
+        public async Task<bool> CreateCollection(string name, ulong size, DistanceType distanceType)
         {
             var client = GetClient();
 
             // if the collection already exists, return.
             var exists = await client.CollectionExistsAsync(name);
-            if (exists) return;
+            if (exists) return false;
 
             await client.CreateCollectionAsync(name,
                 new VectorParams { Size = size, Distance = MapDistanceType(distanceType) });
+
+            return true;
         }
 
         public async void Upsert(string collectionName, List<VectorPoint> points)
@@ -122,20 +124,6 @@ namespace Nickel.AI.VectorDB
                 limit: (ulong)limit);
 
             var results = new List<VectorPoint>();
-
-            // TODO: results contain a score:
-            /*
-                { 
-                    "id": { "uuid": "571c12de-1005-4616-b455-68d42087f8af" }, 
-                    "payload": { 
-                        "text": { 
-                            "stringValue": "FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints." 
-                        } 
-                    }, 
-                    "score": 0.597257, 
-                    "version": "2" 
-                }
-            */
 
             foreach (var point in points)
             {

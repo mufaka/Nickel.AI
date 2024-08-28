@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Hexa.NET.ImGui;
+using Microsoft.Extensions.Logging;
 using OpenCvSharp;
 using Raylib_cs;
+using TesseractOCR;
+using TesseractOCR.Enums;
 
 namespace Nickel.AI.Desktop.UI.Panels
 {
@@ -27,6 +30,11 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         public override void RenderRaylib()
         {
+            if (_texture != null)
+            {
+                Raylib.DrawTexture(_texture.Texture, 0, 0, Color.White);
+            }
+
             if (_videoCapture == null)
             {
                 // NOTE: This is called every frame so we don't want to spawn a new thread
@@ -36,29 +44,74 @@ namespace Nickel.AI.Desktop.UI.Panels
                     _cameraInitializing = true;
                     // NOTE: There is a delay in initializing the video capture so using a Thread
                     //       here for UI responsiveness.
-                    var thread = new Thread(() => { _videoCapture = new VideoCapture(0); });
+                    var thread = new Thread(() =>
+                    {
+                        _videoCapture = new VideoCapture(0);
+                        _videoCapture.Saturation = 50;
+                    });
                     thread.Start();
                 }
             }
             else
             {
                 var mat = new Mat();
+                var grayMat = new Mat();
                 _videoCapture.Read(mat);
-                var image = Raylib.LoadImageFromMemory(".png", mat.ImEncode(".png"));
+
+                Cv2.CvtColor(mat, grayMat, ColorConversionCodes.BGR2GRAY);
+                var imageBytes = grayMat.ImEncode(".png");
+                var image = Raylib.LoadImageFromMemory(".png", imageBytes);
+
                 _texture = new WebcamTexture();
                 _texture.Texture = Raylib.LoadTextureFromImage(image);
-                Raylib.UnloadImage(image);
-            }
 
-            if (_texture != null)
-            {
-                Raylib.DrawTexture(_texture.Texture, 0, 0, Color.White);
+                Raylib.UnloadImage(image);
+
+                if (ImGui.Button("Read"))
+                {
+                    ReadTextFromImage(imageBytes);
+                }
             }
+        }
+
+        private void ReadTextFromImage(byte[] imageBytes)
+        {
+            // TODO: This can probably be scoped at class level
+            using var engine = new Engine(@"./TesseractData", Language.English, EngineMode.Default);
+            using var img = TesseractOCR.Pix.Image.LoadFromMemory(imageBytes);
+            using var page = engine.Process(img);
+
+            Console.WriteLine(page.Text);
+
+            /*
+            foreach (var block in page.Layout)
+            {
+                foreach (var paragraph in block.Paragraphs)
+                {
+                    foreach (var textLine in paragraph.TextLines)
+                    {
+                        if (textLine.Confidence > 50.0 && !String.IsNullOrWhiteSpace(textLine.Text))
+                        {
+                            Console.Write($"{textLine.Confidence}\t\t{textLine.Text}");
+                        }
+                    }
+                }
+            }
+            */
+
         }
 
         public override void DoDetach()
         {
             base.DoDetach();
+            if (_videoCapture != null)
+            {
+                if (!_videoCapture.IsDisposed)
+                {
+                    _videoCapture.Dispose();
+                }
+            }
+            _videoCapture = null;
         }
     }
 }

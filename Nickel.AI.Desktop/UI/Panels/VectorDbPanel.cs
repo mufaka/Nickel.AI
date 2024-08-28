@@ -38,7 +38,7 @@ namespace Nickel.AI.Desktop.UI.Panels
                 _ollamaUrl = "http://localhost:11434";
             }
 
-            _embedder = new OllamaEmbedder(_ollamaUrl, "llama3");
+            _embedder = new OllamaEmbedder(_ollamaUrl, "bge-large");
 
             InitializeCollections();
         }
@@ -120,8 +120,10 @@ namespace Nickel.AI.Desktop.UI.Panels
                         if (ImGui.InputText("Search", ref _searchQuery, 256, ImGuiInputTextFlags.EnterReturnsTrue))
                         {
                             // TODO: we need to know the type of embeddings that were used.
-                            _searchResults = _qdrant!.Search(_selectedCollection,
-                                _embedder!.GetEmbedding(_searchQuery).Result.Select(f => (float)f).ToArray(), 100).Result;
+
+                            var searchVector = _embedder!.GetEmbedding(_searchQuery).Result.Select(f => (float)f).ToArray();
+
+                            _searchResults = _qdrant!.Search(_selectedCollection, searchVector, 5).Result;
                         }
 
                         ImGui.EndChild();

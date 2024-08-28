@@ -6,7 +6,7 @@
     public interface IVectorDB
     {
         Task<bool> CollectionExists(string name);
-        void CreateCollection(string name, ulong size, DistanceType distanceType);
+        Task<bool> CreateCollection(string name, ulong size, DistanceType distanceType);
         void Upsert(string collectionName, List<VectorPoint> points);
         Task<List<VectorPoint>> Search(string collectionName, float[] queryVector, int limit);
         Task<List<string>> ListCollections();

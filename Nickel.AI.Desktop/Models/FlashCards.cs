@@ -45,6 +45,16 @@ namespace Nickel.AI.Desktop.Models
                 return new FlashCards();
             }
         }
+
+        public void AddCardsFromLlmResponse(string response)
+        {
+            var cards = FlashCards.FromLlmResponse(response);
+
+            if (cards != null)
+            {
+                Cards.AddRange(cards.Cards);
+            }
+        }
     }
 
     public class Card

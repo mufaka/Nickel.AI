@@ -3,8 +3,15 @@ using Microsoft.Extensions.Logging;
 using Nickel.AI.Desktop.External.Mochi;
 using Nickel.AI.Desktop.Models;
 using Nickel.AI.Desktop.Settings;
+using Nickel.AI.Desktop.UI.Modals;
+using Nickel.AI.Embeddings;
+using Nickel.AI.VectorDB;
 using OllamaSharp;
 using OllamaSharp.Models;
+using System.Collections.Concurrent;
+using System.Text;
+using TesseractOCR;
+using TesseractOCR.Enums;
 
 namespace Nickel.AI.Desktop.UI.Panels
 {
@@ -23,6 +30,10 @@ namespace Nickel.AI.Desktop.UI.Panels
         private MochiDeck? _selectedDeck;
         private bool _fetchingDecks = false;
         private string _deckName = string.Empty;
+
+        private ChooseFileDialog _sourceDialog = new ChooseFileDialog();
+        private string _imageDir = string.Empty;
+        private string _collectionName = string.Empty;
 
         public LearningPanel(ILogger<LearningPanel> logger)
         {
@@ -47,18 +58,59 @@ namespace Nickel.AI.Desktop.UI.Panels
         {
             try
             {
+                if (!String.IsNullOrWhiteSpace(_sourceDialog.SelectedPath))
+                {
+                    _imageDir = _sourceDialog.SelectedPath;
+                }
+
+
                 ImGui.InputText("Subject", ref _subject, 256, ImGuiInputTextFlags.None);
                 ImGui.InputText("Topic", ref _topic, 256, ImGuiInputTextFlags.None);
-                if (ImGui.Button("Create Cards"))
+                ImGui.InputText("Image Dir", ref _imageDir, 256, ImGuiInputTextFlags.None);
+                ImGui.SameLine();
+                _sourceDialog.ShowDialogButton("...", "Choose Dir");
+                ImGui.InputText("Collection Name", ref _collectionName, 256, ImGuiInputTextFlags.None);
+
+                if (!String.IsNullOrWhiteSpace(_subject) && !String.IsNullOrWhiteSpace(_topic))
                 {
-                    if (!String.IsNullOrWhiteSpace(_subject) && !String.IsNullOrWhiteSpace(_topic))
+
+                    if (ImGui.Button("Create Cards"))
                     {
                         _selectedCardIndex = 0;
                         _cardSide = 0;
                         _fetchingDecks = false;
                         CreateCards();
                     }
+
+                    ImGui.SameLine();
+
+                    if (!String.IsNullOrWhiteSpace(_imageDir))
+                    {
+                        if (ImGui.Button("Create Cards From Images"))
+                        {
+                            _selectedCardIndex = 0;
+                            _cardSide = 0;
+                            _fetchingDecks = false;
+                            CreateCardsFromImageFiles();
+                        }
+
+                        ImGui.SameLine();
+
+                        if (ImGui.Button("Create Notes From Images"))
+                        {
+                            CreateNotesFromImageFiles();
+                        }
+                    }
                 }
+
+                if (!String.IsNullOrEmpty(_collectionName))
+                {
+                    if (ImGui.Button("Index Text From Images"))
+                    {
+                        IndexTextFromImageFiles();
+                    }
+                }
+
 
                 if (_cards.Cards.Count > 0)
                 {
@@ -306,7 +358,7 @@ namespace Nickel.AI.Desktop.UI.Panels
 
         private bool DeckAlreadyExists(string name)
         {
-            var existing = _decks.Where(d => d.Name == name).FirstOrDefault();
+            var existing = _decks?.Where(d => d.Name == name).FirstOrDefault();
             return existing != null;
         }
 
@@ -361,6 +413,216 @@ namespace Nickel.AI.Desktop.UI.Panels
             }
         }
 
+        private async Task<string> GetChatResponse(string prompt)
+        {
+            var ollamaEndpointUrl = SettingsManager.ApplicationSettings.Ollama.EndPoint;
+
+            if (String.IsNullOrWhiteSpace(ollamaEndpointUrl))
+            {
+                _logger.LogInformation("Ollama endpoint is not configured. Using \"http://localhost:11434\" as a default.");
+                ollamaEndpointUrl = "http://localhost:11434";
+                SettingsManager.ApplicationSettings.Ollama.EndPoint = ollamaEndpointUrl;
+            }
+
+            Uri? ollamaEndpoint;
+
+            if (!Uri.TryCreate(ollamaEndpointUrl, UriKind.Absolute, out ollamaEndpoint))
+            {
+                _logger.LogInformation($"Ollama configured endpoint is invalid [{ollamaEndpointUrl}]. Using \"http://localhost:11434\" as a default.");
+                ollamaEndpoint = new Uri("http://localhost:11434");
+                SettingsManager.ApplicationSettings.Ollama.EndPoint = "http://localhost:11434";
+            }
+
+            var model = SettingsManager.ApplicationSettings.Ollama.Model;
+
+            if (String.IsNullOrWhiteSpace(model))
+            {
+                _logger.LogInformation("Ollama model is not configured. Using \"llama3.1\" as a default.");
+                model = "llama3.1";
+                SettingsManager.ApplicationSettings.Ollama.Model = model;
+            }
+
+            var ollama = new OllamaApiClient(ollamaEndpoint);
+
+            var completionRequest = new GenerateCompletionRequest();
+            completionRequest.Stream = false;
+
+            var requestOptions = new RequestOptions()
+            {
+                Temperature = 0.3f,
+            };
+
+            completionRequest.Options = requestOptions;
+            completionRequest.Prompt = prompt;
+            completionRequest.Model = model;
+
+            var completionResponse = await ollama.GetCompletion(completionRequest);
+            return completionResponse.Response;
+        }
+
+        private List<string> ReadImageFiles(string directory, bool splitByBlock)
+        {
+            var files = Directory.GetFiles(directory);
+            var bag = new ConcurrentBag<string>();
+
+            _logger.LogInformation("Processing {file_count} files in {directory}.", files.Length, directory);
+
+            Parallel.ForEach(files, (file) =>
+            {
+                try
+                {
+                    // NOTE: The engine only allows for processing one image at a time so we are
+                    //       creating a new instance for each file.
+                    using var engine = new Engine(@"./TesseractData", Language.English, EngineMode.Default);
+                    using var img = TesseractOCR.Pix.Image.LoadFromFile(file);
+                    using var page = engine.Process(img);
+
+                    var buff = new StringBuilder();
+
+                    foreach (var block in page.Layout)
+                    {
+                        foreach (var paragraph in block.Paragraphs)
+                        {
+                            foreach (var textLine in paragraph.TextLines)
+                            {
+                                if (textLine.Confidence > 65.0 && !String.IsNullOrWhiteSpace(textLine.Text))
+                                {
+                                    buff.Append(textLine.Text);
+                                }
+                            }
+                        }
+
+                        if (splitByBlock && buff.Length > 0)
+                        {
+                            bag.Add(buff.ToString());
+                            buff.Clear();
+                        }
+                    }
+
+                    if (!splitByBlock && buff.Length > 0)
+                    {
+                        bag.Add(buff.ToString());
+                        buff.Clear();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Unable to read text from {file_name}. {message}", file, ex.Message);
+                }
+            });
+
+            _logger.LogInformation("Created {text_count} texts from images.", bag.Count);
+            return bag.ToList();
+        }
+
+        private async void IndexTextFromImageFiles()
+        {
+            var directory = _imageDir;
+            //var embedder = new OllamaEmbedder("http://localhost:11434", "llama3.1");
+            var embedder = new OllamaEmbedder("http://localhost:11434", "bge-large");
+            var texts = ReadImageFiles(directory, true);
+
+            // TODO: This needs to be a UI input
+            IVectorDB qdrant = new QdrantVectorDB("http://localhost:6334");
+
+            await CreateKnowledgebase(_collectionName, qdrant, embedder, texts);
+        }
+
+        private static async Task CreateKnowledgebase(string collectionName, IVectorDB qdrant, OllamaEmbedder embedder, List<string> documents)
+        {
+            // TODO: double check the size parameter. Should match embedding vector size
+            var created = await qdrant.CreateCollection(collectionName, 1024, DistanceType.Cosine);
+
+            if (created)
+            {
+                // create vector points from documents
+                List<VectorPoint> points = new List<VectorPoint>();
+
+                foreach (var document in documents)
+                {
+                    var point = new VectorPoint();
+
+                    // TODO: Need to come up with an ID scheme that lets this operation be idempotent
+                    point.Id = Guid.NewGuid().ToString();
+
+                    // TODO: embedder uses double[], qdrant client uses float[]. Casting here for now but this sucks because it
+                    //       could barf (64 bit to 32 bit ..)
+                    var embeddings = await embedder.GetEmbedding(document);
+                    point.Vectors = embeddings.Select(f => (float)f).ToArray();
+                    point.Payload = new Dictionary<string, string>()
+                {
+                    { "document", document }
+                };
+
+                    if (point.Vectors.Length > 0)
+                    {
+                        points.Add(point);
+                    }
+                }
+
+                // TODO: Should this be paged?
+                qdrant.Upsert(collectionName, points);
+            }
+        }
+
+        private async void CreateNotesFromImageFiles()
+        {
+            var flashCards = new FlashCards();
+            var directory = _imageDir;
+            var files = Directory.GetFiles(directory);
+            var texts = ReadImageFiles(directory, false);
+
+            foreach (var text in texts)
+            {
+                var prompt = @$"Summarize the given text for someone studying {_subject} {_topic}
+
+text:
+{text}
+";
+                var response = await GetChatResponse(prompt);
+
+                var card = new Card()
+                {
+                    Question = response,
+                    Detail = string.Empty
+                };
+
+                flashCards.Cards.Add(card);
+            }
+
+            _logger.LogInformation("Created {card_count} notes from images", flashCards.Cards.Count);
+            _cards = flashCards;
+        }
+
+        private async void CreateCardsFromImageFiles()
+        {
+            var flashCards = new FlashCards();
+            var directory = _imageDir;
+            var files = Directory.GetFiles(directory);
+            var texts = ReadImageFiles(directory, false);
+
+            foreach (var text in texts)
+            {
+                var prompt = @$"I am a student learning {_subject}. Generate flash cards for me covering {_topic} using the provided context. Respond in json with the following format:
+
+        {{
+            ""cards"": [
+                {{ ""question"": """", ""answer"": """" }}  
+            ]
+        }}
+
+context:
+{text}
+";
+                var response = await GetChatResponse(prompt);
+                flashCards.AddCardsFromLlmResponse(response);
+
+                _logger.LogInformation("{0} cards created for subject {0}, topic {1}", flashCards.Cards.Count, _subject, _topic);
+            }
+
+            _cards = flashCards;
+        }
+
         private async void CreateCards()
         {
             try
@@ -369,50 +631,17 @@ namespace Nickel.AI.Desktop.UI.Panels
                 {
                     try
                     {
-                        var ollamaEndpointUrl = SettingsManager.ApplicationSettings.Ollama.EndPoint;
+                        var prompt = @$"I am a student learning {_subject}. Generate 30 flash cards for me covering {_topic}. Respond in json with the following format:
 
-                        if (String.IsNullOrWhiteSpace(ollamaEndpointUrl))
-                        {
-                            _logger.LogInformation("Ollama endpoint is not configured. Using \"http://localhost:11434\" as a default.");
-                            ollamaEndpointUrl = "http://localhost:11434";
-                        }
-
-                        Uri? ollamaEndpoint;
-
-                        if (!Uri.TryCreate(ollamaEndpointUrl, UriKind.Absolute, out ollamaEndpoint))
-                        {
-                            _logger.LogInformation($"Ollama configured endpoint is invalid [{ollamaEndpointUrl}]. Using \"http://localhost:11434\" as a default.");
-                            ollamaEndpoint = new Uri("http://localhost:11434");
-                        }
-
-                        var ollama = new OllamaApiClient(ollamaEndpoint);
-
-                        // ask without giving a context
-                        var completionRequest = new GenerateCompletionRequest();
-                        completionRequest.Stream = false;
-                        completionRequest.Prompt = @$"I am a student learning {_subject}. Generate 30 flash cards for me covering {_topic}. Respond in json with the following format:
-
-                {{
-                    ""cards"": [
-                        {{ ""question"": """", ""answer"": """" }}  
-                    ]
-                }}
+{{
+    ""cards"": [
+        {{ ""question"": """", ""answer"": """" }}  
+    ]
+}}
 ";
 
-                        var model = SettingsManager.ApplicationSettings.Ollama.Model;
-
-                        if (String.IsNullOrWhiteSpace(model))
-                        {
-                            _logger.LogInformation("Ollama model is not configured. Using \"llama3.1\" as a default.");
-                            model = "llama3.1";
-                        }
-
-                        completionRequest.Model = model;
-
-                        var completionResponse = await ollama.GetCompletion(completionRequest);
-                        var answer = completionResponse.Response;
-
-                        _cards = FlashCards.FromLlmResponse(answer);
+                        var response = await GetChatResponse(prompt);
+                        _cards = FlashCards.FromLlmResponse(response);
                         _logger.LogInformation("{0} cards created for subject {0}, topic {1}", _cards.Cards.Count, _subject, _topic);
                     }
                     catch (Exception ex)
